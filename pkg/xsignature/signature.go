@@ -21,7 +21,7 @@ type SignatureSrv struct {
 }
 
 // NewSignatureSrv 创建一个HMACSigner实例
-func NewSignatureSrv(cfg *setting.AppConfig) *SignatureSrv {
+func NewSignatureSrv(cfg *config.AppConfig) *SignatureSrv {
 	return &SignatureSrv{
 		secretKey:          []byte(cfg.App.SecretKey),
 		hashAlgorithm:      "sha256",

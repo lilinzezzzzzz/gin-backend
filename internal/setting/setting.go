@@ -54,7 +54,7 @@ type DesignGPTAPI struct {
 // LoadConfig 从 viper 加载配置到 Config 结构体
 func LoadConfig(env string) {
 	// 配置文件路径
-	configFile := fmt.Sprintf("internal/config/%s.yaml", env)
+	configFile := fmt.Sprintf("../configs/%s.yaml", env)
 	viper.SetConfigFile(configFile)
 
 	if err := viper.ReadInConfig(); err != nil {

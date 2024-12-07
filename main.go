@@ -26,7 +26,7 @@ func main() {
 	}
 
 	// 初始化配置
-	setting.LoadConfig(env)
+	config.LoadConfig(env)
 	// 初始化日志
 	logger.InitLogrus()
 
@@ -35,10 +35,10 @@ func main() {
 	r.Use(gin.Recovery())
 	r.Use(middleware.LoggerMiddleware(logger.Logger))
 	// 注册路由
-	routes.RegisterRoutes(r)
+	routers.RegisterRoutes(r)
 
 	// 从配置中读取端口号
-	port := setting.Config.App.Port
+	port := config.Config.App.Port
 	if err := r.Run(fmt.Sprintf(":%d", port)); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
