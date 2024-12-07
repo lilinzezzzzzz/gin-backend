@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"innoversepm-backend/internal/middleware"
 	"innoversepm-backend/internal/routes"
 	"innoversepm-backend/internal/setting"
+	"innoversepm-backend/pkg/logger"
 	"log"
 	"os"
 	"strings"
@@ -25,10 +27,13 @@ func main() {
 
 	// 初始化配置
 	setting.LoadConfig(env)
+	// 初始化日志
+	logger.InitLogrus()
 
 	// 初始化 Gin 引擎
 	r := gin.New()
-	r.Use(gin.Logger(), gin.Recovery())
+	r.Use(gin.Recovery())
+	r.Use(middleware.LoggerMiddleware(logger.Logger))
 	// 注册路由
 	routes.RegisterRoutes(r)
 
