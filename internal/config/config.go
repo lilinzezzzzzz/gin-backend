@@ -1,6 +1,10 @@
 package config
 
-import "log"
+import (
+	"fmt"
+	"log"
+	"os"
+)
 
 import (
 	"github.com/spf13/viper"
@@ -9,13 +13,17 @@ import (
 var Config *viper.Viper
 
 func InitConfig() {
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("internal/config/")
+	env := os.Getenv("GO_ENV")
+	if env == "" {
+		env = "dev"
+	}
+	configFile := fmt.Sprintf("internal/config/%s.yaml", env)
+	viper.SetConfigFile(configFile)
 
 	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("Error reading config file: %v", err)
+		log.Fatalf("Error reading config file %s: %v", configFile, err)
 	}
+	log.Printf("Using config file: %s", configFile)
 
 	Config = viper.GetViper()
 }
