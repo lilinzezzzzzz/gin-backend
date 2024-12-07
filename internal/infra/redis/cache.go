@@ -1,12 +1,108 @@
 package redis
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"innoversepm-backend/pkg/logger"
 	"time"
 
 	"github.com/go-redis/redis/v8"
 )
+
+func sessionCacheKey(session string) string {
+	return "session:" + session
+}
+
+func sessionListCacheKey(userID int) string {
+	return fmt.Sprintf("session_list:%d", userID)
+}
+
+// SetSession 设置会话键值，并设置过期时间（默认10800秒=3小时）
+func SetSession(ctx *gin.Context, session string, userID int, category string, ex time.Duration) error {
+	key := sessionCacheKey(session)
+	value := map[string]interface{}{
+		"user_id":  userID,
+		"category": category,
+	}
+	return SetValue(ctx, key, value, ex)
+}
+
+// GetSessionValue  获取会话中的用户ID和用户类型。
+func GetSessionValue(ctx *gin.Context, session string) (map[string]string, error) {
+	sessCacheKey := sessionCacheKey(session)
+	value, err := GetValue(ctx, sessCacheKey)
+	if err != nil {
+		return nil, err
+	}
+
+	if value == "" {
+		return nil, errors.New("session not found")
+	}
+
+	// 将JSON字符串反序列化为map[string]string
+	var result map[string]string
+	if err := json.Unmarshal([]byte(value), &result); err != nil {
+		logger.Logger.Error(fmt.Sprintf("Failed to unmarshal JSON, value: %s", value), err)
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// SetSessionList 更新用户的session列表：
+// 如果列表长度<3，直接rpush
+// 如果列表>=3，lpop最旧session再rpush新session
+func SetSessionList(ctx *gin.Context, userID int, session string) error {
+	cacheKey := sessionListCacheKey(userID)
+
+	sessionList, err := GetListAll(ctx, cacheKey)
+	if err != nil {
+		logger.Logger.Error(fmt.Sprintf("Failed to get list from %s", cacheKey), err)
+		return err
+	}
+
+	lengthSessionList := len(sessionList)
+
+	// 不需要获取新连接，go-redis是并发安全的，多次使用Client即可
+	if lengthSessionList < 3 {
+		// 列表长度<3，直接插入
+		if err := Client.RPush(ctx, cacheKey, session).Err(); err != nil {
+			logger.Logger.Error(fmt.Sprintf("Failed to rpush session into %s", cacheKey), err)
+			return err
+		}
+	} else {
+		// 长度>=3，弹出旧的session
+		oldSession, err := Client.LPop(ctx, cacheKey).Result()
+		if errors.Is(err, redis.Nil) {
+			// 如果为空，不用特别处理，但逻辑上来说已经判断length>=3，不会出现nil
+		} else if err != nil {
+			logger.Logger.Error(fmt.Sprintf("Failed to lpop from %s", cacheKey), err)
+			return err
+		} else {
+			// 这里可根据需求删除旧的session键值，如果需要的话
+			// err := Client.Del(ctx, sessionCacheKey(oldSession)).Err()
+			// if err != nil {
+			//     loggerError(fmt.Sprintf("Failed to delete old session %s", oldSession), err)
+			//     return err
+			// }
+
+			// 插入新的session
+			if err := Client.RPush(ctx, cacheKey, session).Err(); err != nil {
+				logger.Logger.Error(fmt.Sprintf("Failed to rpush new session into %s", cacheKey), err)
+				return err
+			}
+
+			logger.Logger.Warning(
+				fmt.Sprintf("Session list for user %d is full, popping and deleting oldest session: %s",
+					userID, oldSession),
+			)
+		}
+	}
+
+	return nil
+}
 
 // SetValue 在Redis中设置键值对，并支持过期时间
 func SetValue(ctx *gin.Context, key string, value interface{}, expiration time.Duration) error {
@@ -83,4 +179,9 @@ func PopFromList(ctx *gin.Context, key string) (string, error) {
 		return "", nil
 	}
 	return val, err
+}
+
+// GetListAll 获取列表所有元素
+func GetListAll(ctx *gin.Context, key string) ([]string, error) {
+	return Client.LRange(ctx, key, 0, -1).Result()
 }
