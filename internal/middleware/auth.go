@@ -36,7 +36,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			xTimestamp := c.GetHeader("X-Timestamp")
 			xNonce := c.GetHeader("X-Nonce")
 
-			signature := xsignature.NewSignatureSrv(config.Config)
+			signature := xsignature.NewSignatureSrv(setting.Config)
 			if !signature.VerifySignature(xSignature, xTimestamp, xNonce) {
 				c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid xsignature or timestamp"})
 				c.Abort()

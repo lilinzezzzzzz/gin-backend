@@ -6,7 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"innoversepm-backend/internal/setting"
-	"log"
+	"innoversepm-backend/pkg/logger"
 	"sort"
 	"strconv"
 	"strings"
@@ -66,7 +66,7 @@ func (s *SignatureSrv) GenerateSignature(timestamp, nonce string) (string, error
 func (s *SignatureSrv) VerifySignature(timestamp, signature, nonce string) bool {
 	expectedSignature, err := s.GenerateSignature(timestamp, nonce)
 	if err != nil {
-		log.Printf("VerifySignature generate expected signature error: %v", err)
+		logger.Logger.Printf("VerifySignature generate expected signature error: %v", err)
 		return false
 	}
 
@@ -78,13 +78,13 @@ func (s *SignatureSrv) VerifySignature(timestamp, signature, nonce string) bool 
 func (s *SignatureSrv) IsTimestampValid(requestTimeStr string) (bool, error) {
 	requestTime, err := strconv.ParseInt(requestTimeStr, 10, 64)
 	if err != nil {
-		log.Printf("IsTimestampValid failed: %v", err)
+		logger.Logger.Printf("IsTimestampValid failed: %v", err)
 		return false, err
 	}
 
 	currentTime := time.Now().Unix()
 	if (currentTime - requestTime) > s.timestampTolerance {
-		log.Printf("invalid timestamp, request_time: %d, current_time: %d", requestTime, currentTime)
+		logger.Logger.Printf("invalid timestamp, request_time: %d, current_time: %d", requestTime, currentTime)
 		return false, nil
 	}
 
@@ -99,13 +99,13 @@ func (s *SignatureSrv) VerifySignatureData(xSignature, xTimestamp, xNonce string
 		return false, err
 	}
 	if !valid {
-		log.Printf("invalid timestamp: %s", xTimestamp)
+		logger.Logger.Printf("invalid timestamp: %s", xTimestamp)
 		return false, nil
 	}
 
 	// 检查签名是否有效
 	if !s.VerifySignature(xTimestamp, xSignature, xNonce) {
-		log.Printf("invalid signature: timestamp: %s, nonce: %s, signature: %s", xTimestamp, xNonce, xSignature)
+		logger.Logger.Printf("invalid signature: timestamp: %s, nonce: %s, signature: %s", xTimestamp, xNonce, xSignature)
 		return false, nil
 	}
 
