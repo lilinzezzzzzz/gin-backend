@@ -13,8 +13,8 @@ func main() {
 	setting.LoadConfig()
 
 	// 初始化 Gin 引擎
-	r := gin.Default()
-
+	r := gin.New()
+	r.Use(gin.Logger(), gin.Recovery())
 	// 注册路由
 	routes.RegisterRoutes(r)
 
