@@ -1,9 +1,29 @@
 app:
   port: 28091
+  secret_key: "svtzBp1PwHAwJgwttBWZLofYvfMENlepjBuJanzTQwOic0bZLMC7NC"
+  cors_origins:
+    - "*"
 
 database:
-  host: "localhost"
-  port: 3306
-  user: "root"
-  password: "password"
-  name: "innoverse"
+  mysql:
+    username: "root"
+    password: "F4ASxTobZXY4"
+    host: "47.106.139.247"
+    port: 23306
+    name: "innoversepm"
+
+  design_gpt_mysql:
+    username: "innoverse"
+    password: "Innoverse012"
+    host: "47.106.139.247"
+    port: 13306
+    name: "innoverse_v3_backend"
+
+redis:
+  host: "47.106.139.247"
+  port: 26379
+  password: ""
+  db: 0
+
+design_gpt_api:
+  base_url: "http://47.106.139.247:8008/api/v1"
