@@ -2,10 +2,12 @@ package mysql
 
 import (
 	"fmt"
-	"log"
+	"innoversepm-backend/pkg/logger"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+
 	"innoversepm-backend/internal/setting"
 )
 
@@ -13,25 +15,38 @@ var DB *gorm.DB
 
 func InitMySQL(cfg *setting.AppConfig) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		cfg.Database.MySQL.Username, cfg.Database.MySQL.Password, cfg.Database.MySQL.Host,
-		cfg.Database.MySQL.Port, cfg.Database.MySQL.Name)
+		cfg.Database.MySQL.Username,
+		cfg.Database.MySQL.Password,
+		cfg.Database.MySQL.Host,
+		cfg.Database.MySQL.Port,
+		cfg.Database.MySQL.Name,
+	)
 
-	var err error
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Failed to connect to MySQL: %v", err)
+		logger.Logger.Fatalf("Failed to connect to MySQL: %v", err)
 	}
 
-	log.Println("MySQL connected successfully")
+	// 获取底层的sql.DB对象
+	sqlDB, err := DB.DB()
+	if err != nil {
+		logger.Logger.Fatalf("Failed to get database instance: %v", err)
+	}
+
+	// 设置连接池参数，根据项目实际需求进行调整
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
+
+	logger.Logger.Println("MySQL connected successfully")
 }
 
-// CloseMySQL 关闭数据库连接（如果需要）
 func CloseMySQL() {
 	sqlDB, err := DB.DB()
 	if err != nil {
-		log.Fatalf("Failed to get database instance: %v", err)
+		logger.Logger.Fatalf("Failed to get database instance: %v", err)
 	}
 	if err := sqlDB.Close(); err != nil {
-		log.Fatalf("Failed to close MySQL connection: %v", err)
+		logger.Logger.Fatalf("Failed to close MySQL connection: %v", err)
 	}
 }
