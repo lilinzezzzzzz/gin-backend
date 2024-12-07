@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"innoversepm-backend/internal/config"
 	"innoversepm-backend/internal/routes"
+	"innoversepm-backend/internal/setting"
 )
 
 func main() {
 	// 初始化配置
-	config.InitConfig()
+	setting.LoadConfig()
 
 	// 初始化 Gin 引擎
 	r := gin.Default()
@@ -18,6 +18,6 @@ func main() {
 	routes.RegisterRoutes(r)
 
 	// 从配置中读取端口号
-	port := config.Config.GetInt("app.port")
+	port := setting.Config.App.Port
 	r.Run(fmt.Sprintf(":%d", port))
 }

@@ -1,8 +1,10 @@
 package setting
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
 	"log"
+	"os"
 )
 
 var Config *AppConfig
@@ -26,6 +28,19 @@ type Database struct {
 
 // LoadConfig 从 viper 加载配置到 Config 结构体
 func LoadConfig() {
+	env := os.Getenv("GO_ENV")
+	if env == "" {
+		env = "dev"
+	}
+	// 相对路径
+	configFile := fmt.Sprintf("internal/.env/%s.yaml", env)
+	viper.SetConfigFile(configFile)
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("Error reading .env file %s: %v", configFile, err)
+	}
+	log.Printf("Using .env file: %s", configFile)
+
 	if err := viper.Unmarshal(&Config); err != nil {
 		log.Fatalf("Unable to decode into struct: %v", err)
 	}
