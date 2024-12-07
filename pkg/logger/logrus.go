@@ -10,7 +10,7 @@ var Logger *logrus.Logger
 
 // InitLogrus 初始化Logrus日志配置
 func InitLogrus() {
-	Logger := logrus.New()
+	Logger = logrus.New()
 
 	// 设置日志格式为JSON格式
 	Logger.SetFormatter(&logrus.JSONFormatter{})

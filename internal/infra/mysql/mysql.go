@@ -22,7 +22,9 @@ func InitMySQL(cfg *setting.AppConfig) {
 		cfg.Database.MySQL.Name,
 	)
 
-	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	var err error
+
+	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		logger.Logger.Fatalf("Failed to connect to MySQL: %v", err)
 	}

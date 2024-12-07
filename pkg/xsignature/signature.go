@@ -5,6 +5,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"github.com/gin-gonic/gin"
 	"innoversepm-backend/internal/setting"
 	"innoversepm-backend/pkg/logger"
 	"sort"
@@ -30,7 +31,7 @@ func NewSignatureSrv(cfg *setting.AppConfig) *SignatureSrv {
 }
 
 // GenerateSignature 生成签名
-func (s *SignatureSrv) GenerateSignature(timestamp, nonce string) (string, error) {
+func (s *SignatureSrv) GenerateSignature(ctx *gin.Context, timestamp, nonce string) (string, error) {
 	// 对数据进行排序，确保签名一致性
 	data := map[string]string{
 		"timestamp": timestamp,
@@ -63,8 +64,8 @@ func (s *SignatureSrv) GenerateSignature(timestamp, nonce string) (string, error
 }
 
 // VerifySignature 验证签名
-func (s *SignatureSrv) VerifySignature(timestamp, signature, nonce string) bool {
-	expectedSignature, err := s.GenerateSignature(timestamp, nonce)
+func (s *SignatureSrv) VerifySignature(ctx *gin.Context, timestamp, signature, nonce string) bool {
+	expectedSignature, err := s.GenerateSignature(ctx, timestamp, nonce)
 	if err != nil {
 		logger.Logger.Printf("VerifySignature generate expected signature error: %v", err)
 		return false
@@ -75,7 +76,7 @@ func (s *SignatureSrv) VerifySignature(timestamp, signature, nonce string) bool 
 }
 
 // IsTimestampValid 验证时间戳是否有效
-func (s *SignatureSrv) IsTimestampValid(requestTimeStr string) (bool, error) {
+func (s *SignatureSrv) IsTimestampValid(ctx *gin.Context, requestTimeStr string) (bool, error) {
 	requestTime, err := strconv.ParseInt(requestTimeStr, 10, 64)
 	if err != nil {
 		logger.Logger.Printf("IsTimestampValid failed: %v", err)
@@ -92,9 +93,9 @@ func (s *SignatureSrv) IsTimestampValid(requestTimeStr string) (bool, error) {
 }
 
 // VerifySignatureData 将原先独立的VerifySignatureFunc逻辑整合到HMACSigner的方法中
-func (s *SignatureSrv) VerifySignatureData(xSignature, xTimestamp, xNonce string) (bool, error) {
+func (s *SignatureSrv) VerifySignatureData(ctx *gin.Context, xSignature, xTimestamp, xNonce string) (bool, error) {
 	// 检查时间戳，防止重放攻击
-	valid, err := s.IsTimestampValid(xTimestamp)
+	valid, err := s.IsTimestampValid(ctx, xTimestamp)
 	if err != nil {
 		return false, err
 	}
@@ -104,7 +105,7 @@ func (s *SignatureSrv) VerifySignatureData(xSignature, xTimestamp, xNonce string
 	}
 
 	// 检查签名是否有效
-	if !s.VerifySignature(xTimestamp, xSignature, xNonce) {
+	if !s.VerifySignature(ctx, xTimestamp, xSignature, xNonce) {
 		logger.Logger.Printf("invalid signature: timestamp: %s, nonce: %s, signature: %s", xTimestamp, xNonce, xSignature)
 		return false, nil
 	}

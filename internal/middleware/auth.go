@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"innoversepm-backend/internal/core"
 	"innoversepm-backend/internal/setting"
 	"innoversepm-backend/pkg/xsignature"
 	"net/http"
@@ -19,45 +20,45 @@ var notAuthPaths = []string{
 
 // AuthMiddleware 鉴权中间件
 func AuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		urlPath := c.Request.URL.Path
+	return func(ctx *gin.Context) {
+		urlPath := ctx.Request.URL.Path
 
 		// 1. 跳过无需认证的路径
 		for _, path := range notAuthPaths {
 			if urlPath == path || strings.HasPrefix(urlPath, "/docs") {
-				c.Next()
+				ctx.Next()
 				return
 			}
 		}
 
 		// 2. 验签逻辑
 		if strings.HasPrefix(urlPath, "/openapi") {
-			xSignature := c.GetHeader("X-Signature")
-			xTimestamp := c.GetHeader("X-Timestamp")
-			xNonce := c.GetHeader("X-Nonce")
+			xSignature := ctx.GetHeader("X-Signature")
+			xTimestamp := ctx.GetHeader("X-Timestamp")
+			xNonce := ctx.GetHeader("X-Nonce")
 
 			signature := xsignature.NewSignatureSrv(setting.Config)
-			if !signature.VerifySignature(xSignature, xTimestamp, xNonce) {
-				c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid xsignature or timestamp"})
-				c.Abort()
+			if !signature.VerifySignature(ctx, xSignature, xTimestamp, xNonce) {
+				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid xsignature or timestamp"})
+				ctx.Abort()
 				return
 			}
-			c.Next()
+			ctx.Next()
 			return
 		}
 
 		// 3. Session 校验
-		session := c.GetHeader("Authorization")
-		userID, ok := utils.VerifySession(session)
+		session := ctx.GetHeader("Authorization")
+		userID, ok := core.VerifySession(ctx, session)
 		if !ok {
-			c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid or missing session"})
-			c.Abort()
+			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid or missing session"})
+			ctx.Abort()
 			return
 		}
 
 		// 将用户信息存储到上下文中
-		c.Set("userID", userID)
+		ctx.Set("userID", userID)
 
-		c.Next()
+		ctx.Next()
 	}
 }

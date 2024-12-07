@@ -11,17 +11,17 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func sessionCacheKey(session string) string {
+func SessionCacheKey(session string) string {
 	return "session:" + session
 }
 
-func sessionListCacheKey(userID int) string {
+func SessionLstCacheKey(userID int) string {
 	return fmt.Sprintf("session_list:%d", userID)
 }
 
 // SetSession 设置会话键值，并设置过期时间（默认10800秒=3小时）
 func SetSession(ctx *gin.Context, session string, userID int, category string, ex time.Duration) error {
-	key := sessionCacheKey(session)
+	key := SessionCacheKey(session)
 	value := map[string]interface{}{
 		"user_id":  userID,
 		"category": category,
@@ -31,7 +31,7 @@ func SetSession(ctx *gin.Context, session string, userID int, category string, e
 
 // GetSessionValue  获取会话中的用户ID和用户类型。
 func GetSessionValue(ctx *gin.Context, session string) (map[string]string, error) {
-	sessCacheKey := sessionCacheKey(session)
+	sessCacheKey := SessionCacheKey(session)
 	value, err := GetValue(ctx, sessCacheKey)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func GetSessionValue(ctx *gin.Context, session string) (map[string]string, error
 // 如果列表长度<3，直接rpush
 // 如果列表>=3，lpop最旧session再rpush新session
 func SetSessionList(ctx *gin.Context, userID int, session string) error {
-	cacheKey := sessionListCacheKey(userID)
+	cacheKey := SessionLstCacheKey(userID)
 
 	sessionList, err := GetListAll(ctx, cacheKey)
 	if err != nil {
@@ -82,7 +82,7 @@ func SetSessionList(ctx *gin.Context, userID int, session string) error {
 			return err
 		} else {
 			// 这里可根据需求删除旧的session键值，如果需要的话
-			// err := Client.Del(ctx, sessionCacheKey(oldSession)).Err()
+			// err := Client.Del(ctx, SessionCacheKey(oldSession)).Err()
 			// if err != nil {
 			//     loggerError(fmt.Sprintf("Failed to delete old session %s", oldSession), err)
 			//     return err
