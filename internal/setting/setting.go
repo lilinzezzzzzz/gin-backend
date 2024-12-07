@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"log"
-	"os"
-	"strings"
 )
 
 var Config *AppConfig
@@ -28,11 +26,7 @@ type Database struct {
 }
 
 // LoadConfig 从 viper 加载配置到 Config 结构体
-func LoadConfig() {
-	env := strings.ToLower(os.Getenv("GO_ENV"))
-	if env == "" {
-		env = "dev"
-	}
+func LoadConfig(env string) {
 	// 相对路径
 	configFile := fmt.Sprintf("internal/.env/%s.yaml", env)
 	viper.SetConfigFile(configFile)

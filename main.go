@@ -6,11 +6,25 @@ import (
 	"innoversepm-backend/internal/routes"
 	"innoversepm-backend/internal/setting"
 	"log"
+	"os"
+	"strings"
 )
 
 func main() {
+	env := strings.ToLower(os.Getenv("GO_ENV"))
+	switch env {
+	case "dev":
+		gin.SetMode(gin.DebugMode)
+	case "test":
+		gin.SetMode(gin.TestMode)
+	case "prod":
+		gin.SetMode(gin.ReleaseMode)
+	default:
+		log.Fatal("Invalid environment specified")
+	}
+
 	// 初始化配置
-	setting.LoadConfig()
+	setting.LoadConfig(env)
 
 	// 初始化 Gin 引擎
 	r := gin.New()
