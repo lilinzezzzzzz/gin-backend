@@ -12,6 +12,7 @@ func RegisterRoutes(r *gin.Engine) {
 	authGroup.Use(middleware.AuthMiddleware())
 	authController := controllers.NewAuthController()
 	{
-		authGroup.GET("/user", authController.Login)
+		authGroup.GET("/user", authController.UserSessionData)
+		authGroup.POST("/login", authController.ManagerLogin)
 	}
 }

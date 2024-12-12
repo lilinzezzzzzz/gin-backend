@@ -4,8 +4,8 @@ import (
 	"innoversepm-backend/internal/core"
 	"innoversepm-backend/internal/setting"
 	"innoversepm-backend/pkg/constants"
+	"innoversepm-backend/pkg/resp"
 	"innoversepm-backend/pkg/xsignature"
-	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -31,7 +31,6 @@ func AuthMiddleware() gin.HandlerFunc {
 		for _, path := range notSessionAuthPaths {
 			if urlPath == path || strings.HasPrefix(urlPath, "/docs") {
 				ctx.Next()
-				return
 			}
 		}
 
@@ -43,20 +42,17 @@ func AuthMiddleware() gin.HandlerFunc {
 
 			signature := xsignature.NewSignatureSrv(setting.Config)
 			if !signature.VerifySignature(ctx, xSignature, xTimestamp, xNonce) {
-				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid xsignature or timestamp"})
-				ctx.Abort()
+				resp.UNAUTHORIZED(ctx, "invalid xsignature or timestamp")
 				return
 			}
 			ctx.Next()
-			return
 		}
 
 		// 3. Session 校验
 		session := ctx.GetHeader("Authorization")
 		userData, ok := core.VerifySession(ctx, session)
 		if !ok {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid or missing session"})
-			ctx.Abort()
+			resp.UNAUTHORIZED(ctx, "invalid or missing session")
 			return
 		}
 
@@ -65,8 +61,8 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		if userData.Category != constants.UserManager {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid user category"})
-			ctx.Abort()
+			resp.UNAUTHORIZED(ctx, "invalid user category")
+			return
 		}
 
 		// 将用户信息存储到上下文中
