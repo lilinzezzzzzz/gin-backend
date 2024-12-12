@@ -11,11 +11,14 @@ import (
 )
 
 // 不需要认证的路径列表
-var notAuthPaths = []string{
+var notSessionAuthPaths = []string{
 	"/auth/login",
 	"/auth/register",
 	"/docs",
 	"/openapi.json",
+	"/v1/auth/login_by_account",
+	"/v1/auth/login_by_phone",
+	"/v1/auth/verify_session",
 }
 
 // AuthMiddleware 鉴权中间件
@@ -24,7 +27,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		urlPath := ctx.Request.URL.Path
 
 		// 1. 跳过无需认证的路径
-		for _, path := range notAuthPaths {
+		for _, path := range notSessionAuthPaths {
 			if urlPath == path || strings.HasPrefix(urlPath, "/docs") {
 				ctx.Next()
 				return
@@ -49,16 +52,29 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		// 3. Session 校验
 		session := ctx.GetHeader("Authorization")
-		userID, ok := core.VerifySession(ctx, session)
+		userData, ok := core.VerifySession(ctx, session)
 		if !ok {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid or missing session"})
 			ctx.Abort()
 			return
 		}
+		userCategory, ok := userData["category"]
+		if !ok {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid or missing session"})
+			ctx.Abort()
+			return
+		}
+		if strings.HasPrefix(urlPath, "/v1") {
+			ctx.Next()
+		}
+
+		if userCategory != "manager" {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid user category"})
+			ctx.Abort()
+		}
 
 		// 将用户信息存储到上下文中
-		ctx.Set("userID", userID)
-
+		ctx.Set("userData", userData)
 		ctx.Next()
 	}
 }

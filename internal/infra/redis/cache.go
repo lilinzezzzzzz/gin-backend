@@ -15,8 +15,8 @@ func SessionCacheKey(session string) string {
 	return "session:" + session
 }
 
-func SessionLstCacheKey(userID int) string {
-	return fmt.Sprintf("session_list:%d", userID)
+func SessionLstCacheKey(userID string) string {
+	return fmt.Sprintf("session_list:%s", userID)
 }
 
 // SetSession 设置会话键值，并设置过期时间（默认10800秒=3小时）
