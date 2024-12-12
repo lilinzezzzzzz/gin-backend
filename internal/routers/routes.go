@@ -8,11 +8,10 @@ import (
 
 func RegisterRoutes(r *gin.Engine) {
 	// 用户路由示例
-	userGroup := r.Group("/users")
-	userGroup.Use(middleware.AuthMiddleware())
-	userController := controllers.NewAuthController()
+	authGroup := r.Group("/auth")
+	authGroup.Use(middleware.AuthMiddleware())
+	authController := controllers.NewAuthController()
 	{
-		userGroup.GET("/", userController.GetUsers)
-		userGroup.POST("/", userController.CreateUser)
+		authGroup.GET("/user", authController.Login)
 	}
 }

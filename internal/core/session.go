@@ -2,12 +2,13 @@ package core
 
 import (
 	"github.com/gin-gonic/gin"
+	"innoversepm-backend/internal/entity"
 	"innoversepm-backend/internal/infra/redis"
 	"innoversepm-backend/pkg/logger"
 )
 
 // VerifySession checks if the given session is valid and returns the user data associated with it.
-func VerifySession(ctx *gin.Context, session string) (map[string]string, bool) {
+func VerifySession(ctx *gin.Context, session string) (*entity.UserSessionData, bool) {
 	if session == "" {
 		logger.Logger.Warn("Token verification failed: token not found")
 		return nil, false
@@ -24,13 +25,7 @@ func VerifySession(ctx *gin.Context, session string) (map[string]string, bool) {
 		return nil, false
 	}
 
-	userID, ok := userData["user_id"]
-	if !ok || userID == "" {
-		logger.Logger.Warn("Token verification failed: user_id not found")
-		return nil, false
-	}
-
-	sessionLstKey := redis.SessionLstCacheKey(userID)
+	sessionLstKey := redis.SessionLstCacheKey(userData.ID)
 	sessionLst, err := redis.GetListAll(ctx, sessionLstKey)
 	if err != nil {
 		logger.Logger.Warn("Token verification failed: error getting session list: %v\n", err)
@@ -38,7 +33,7 @@ func VerifySession(ctx *gin.Context, session string) (map[string]string, bool) {
 	}
 
 	if sessionLst == nil {
-		logger.Logger.Warn("Token verification failed: session list nil for user_id: %d\n", userID)
+		logger.Logger.Warn("Token verification failed: session list nil for user_id: %d\n", userData.ID)
 		return nil, false
 	}
 
@@ -50,7 +45,7 @@ func VerifySession(ctx *gin.Context, session string) (map[string]string, bool) {
 		}
 	}
 	if !found {
-		logger.Logger.Warn("Token verification failed: session not found in session list, user_id: %d\n", userID)
+		logger.Logger.Warn("Token verification failed: session not found in session list, user_id: %d\n", userData.ID)
 		return nil, false
 	}
 

@@ -59,17 +59,12 @@ func AuthMiddleware() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-		userCategory, ok := userData["category"]
-		if !ok {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid or missing session"})
-			ctx.Abort()
-			return
-		}
+
 		if strings.HasPrefix(urlPath, "/v1") {
 			ctx.Next()
 		}
 
-		if userCategory != constants.UserManager {
+		if userData.Category != constants.UserManager {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid user category"})
 			ctx.Abort()
 		}

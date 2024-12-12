@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"innoversepm-backend/internal/entity"
 	"innoversepm-backend/pkg/logger"
 	"time"
 
@@ -15,8 +16,8 @@ func SessionCacheKey(session string) string {
 	return "session:" + session
 }
 
-func SessionLstCacheKey(userID string) string {
-	return fmt.Sprintf("session_list:%s", userID)
+func SessionLstCacheKey(userID int64) string {
+	return fmt.Sprintf("session_list:%d", userID)
 }
 
 // SetSession 设置会话键值，并设置过期时间（默认10800秒=3小时）
@@ -30,7 +31,7 @@ func SetSession(ctx *gin.Context, session string, userID int, category string, e
 }
 
 // GetSessionValue  获取会话中的用户ID和用户类型。
-func GetSessionValue(ctx *gin.Context, session string) (map[string]string, error) {
+func GetSessionValue(ctx *gin.Context, session string) (*entity.UserSessionData, error) {
 	sessCacheKey := SessionCacheKey(session)
 	value, err := GetValue(ctx, sessCacheKey)
 	if err != nil {
@@ -41,20 +42,19 @@ func GetSessionValue(ctx *gin.Context, session string) (map[string]string, error
 		return nil, errors.New("session not found")
 	}
 
-	// 将JSON字符串反序列化为map[string]string
-	var result map[string]string
-	if err := json.Unmarshal([]byte(value), &result); err != nil {
+	var intermediate entity.UserSessionData
+	if err := json.Unmarshal([]byte(value), &intermediate); err != nil {
 		logger.Logger.Error(fmt.Sprintf("Failed to unmarshal JSON, value: %s", value), err)
 		return nil, err
 	}
 
-	return result, nil
+	return &intermediate, nil
 }
 
 // SetSessionList 更新用户的session列表：
 // 如果列表长度<3，直接rpush
 // 如果列表>=3，lpop最旧session再rpush新session
-func SetSessionList(ctx *gin.Context, userID int, session string) error {
+func SetSessionList(ctx *gin.Context, userID int64, session string) error {
 	cacheKey := SessionLstCacheKey(userID)
 
 	sessionList, err := GetListAll(ctx, cacheKey)
