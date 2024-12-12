@@ -3,6 +3,7 @@ package middleware
 import (
 	"innoversepm-backend/internal/core"
 	"innoversepm-backend/internal/setting"
+	"innoversepm-backend/pkg/constants"
 	"innoversepm-backend/pkg/xsignature"
 	"net/http"
 	"strings"
@@ -68,7 +69,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			ctx.Next()
 		}
 
-		if userCategory != "manager" {
+		if userCategory != constants.UserManager {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid user category"})
 			ctx.Abort()
 		}
