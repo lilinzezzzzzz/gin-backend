@@ -3,6 +3,7 @@ package mysql
 import (
 	"fmt"
 	"innoversepm-backend/pkg/logger"
+	"log"
 	"time"
 
 	"gorm.io/driver/mysql"
@@ -40,7 +41,7 @@ func InitMySQL(cfg *setting.AppConfig) {
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	logger.BaseLogger.Println("MySQL connected successfully")
+	log.Println("MySQL connected successfully")
 }
 
 func CloseMySQL() {

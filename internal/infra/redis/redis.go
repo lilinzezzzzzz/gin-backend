@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"innoversepm-backend/pkg/logger"
+	"log"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -33,7 +34,7 @@ func InitRedis(cfg *setting.AppConfig) {
 		logger.BaseLogger.Fatalf("Failed to connect to Redis: %v", err)
 	}
 
-	logger.BaseLogger.Info("Redis connected successfully")
+	log.Println("Redis connected successfully")
 }
 
 func pingRedis(ctx context.Context) error {
