@@ -39,7 +39,7 @@ func (a *AuthController) ManagerLogin(ctx *gin.Context) {
 		return
 	}
 
-	session, err := a.serv.LoginByAccount(ctx, "", "")
+	session, err := a.serv.LoginByAccount(ctx, loginReq.Account, loginReq.Password)
 	if err != nil {
 		resp.UNAUTHORIZED(ctx, err.Error())
 		return
