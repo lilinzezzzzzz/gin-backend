@@ -13,10 +13,8 @@ func LoggerMiddleware(logger *logrus.Logger) gin.HandlerFunc {
 		c.Set("logger", logger)
 
 		startTime := time.Now()
-
 		// 处理请求
 		c.Next()
-
 		// 记录请求日志
 		duration := time.Since(startTime)
 		entry := logger.WithFields(logrus.Fields{
@@ -28,7 +26,6 @@ func LoggerMiddleware(logger *logrus.Logger) gin.HandlerFunc {
 			"user_agent":  c.Request.UserAgent(),
 			"duration":    duration.Seconds(),
 		})
-
 		if len(c.Errors) > 0 {
 			entry.Error("请求处理错误")
 		} else {

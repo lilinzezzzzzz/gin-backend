@@ -17,7 +17,7 @@ import (
 func main() {
 	env := strings.ToLower(os.Getenv("GO_ENV"))
 	switch env {
-	case "dev":
+	case "dev", "local":
 		gin.SetMode(gin.DebugMode)
 	case "test":
 		gin.SetMode(gin.TestMode)
@@ -44,6 +44,8 @@ func main() {
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(middleware.LoggerMiddleware(logger.Logger))
+	r.Use(middleware.TraceMiddleware())
+	r.Use(middleware.AuthMiddleware())
 
 	// 注册路由
 	routers.RegisterRoutes(r)
