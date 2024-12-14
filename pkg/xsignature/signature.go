@@ -67,7 +67,7 @@ func (s *SignatureSrv) GenerateSignature(ctx *gin.Context, timestamp, nonce stri
 func (s *SignatureSrv) VerifySignature(ctx *gin.Context, timestamp, signature, nonce string) bool {
 	expectedSignature, err := s.GenerateSignature(ctx, timestamp, nonce)
 	if err != nil {
-		logger.Logger.Printf("VerifySignature generate expected signature error: %v", err)
+		logger.Logger(ctx).Printf("VerifySignature generate expected signature error: %v", err)
 		return false
 	}
 
@@ -79,13 +79,13 @@ func (s *SignatureSrv) VerifySignature(ctx *gin.Context, timestamp, signature, n
 func (s *SignatureSrv) IsTimestampValid(ctx *gin.Context, requestTimeStr string) (bool, error) {
 	requestTime, err := strconv.ParseInt(requestTimeStr, 10, 64)
 	if err != nil {
-		logger.Logger.Printf("IsTimestampValid failed: %v", err)
+		logger.Logger(ctx).Printf("IsTimestampValid failed: %v", err)
 		return false, err
 	}
 
 	currentTime := time.Now().Unix()
 	if (currentTime - requestTime) > s.timestampTolerance {
-		logger.Logger.Printf("invalid timestamp, request_time: %d, current_time: %d", requestTime, currentTime)
+		logger.Logger(ctx).Printf("invalid timestamp, request_time: %d, current_time: %d", requestTime, currentTime)
 		return false, nil
 	}
 
@@ -100,13 +100,13 @@ func (s *SignatureSrv) VerifySignatureData(ctx *gin.Context, xSignature, xTimest
 		return false, err
 	}
 	if !valid {
-		logger.Logger.Printf("invalid timestamp: %s", xTimestamp)
+		logger.Logger(ctx).Printf("invalid timestamp: %s", xTimestamp)
 		return false, nil
 	}
 
 	// 检查签名是否有效
 	if !s.VerifySignature(ctx, xTimestamp, xSignature, xNonce) {
-		logger.Logger.Printf("invalid signature: timestamp: %s, nonce: %s, signature: %s", xTimestamp, xNonce, xSignature)
+		logger.Logger(ctx).Printf("invalid signature: timestamp: %s, nonce: %s, signature: %s", xTimestamp, xNonce, xSignature)
 		return false, nil
 	}
 

@@ -44,7 +44,7 @@ func GetSessionValue(ctx *gin.Context, session string) (*entity.UserSessionData,
 
 	var intermediate entity.UserSessionData
 	if err := json.Unmarshal([]byte(value), &intermediate); err != nil {
-		logger.Logger.Error(fmt.Sprintf("Failed to unmarshal JSON, value: %s", value), err)
+		logger.Logger(ctx).Error(fmt.Sprintf("Failed to unmarshal JSON, value: %s", value), err)
 		return nil, err
 	}
 
@@ -59,7 +59,7 @@ func SetSessionList(ctx *gin.Context, userID int64, session string) error {
 
 	sessionList, err := GetListAll(ctx, cacheKey)
 	if err != nil {
-		logger.Logger.Error(fmt.Sprintf("Failed to get list from %s", cacheKey), err)
+		logger.Logger(ctx).Error(fmt.Sprintf("Failed to get list from %s", cacheKey), err)
 		return err
 	}
 
@@ -69,7 +69,7 @@ func SetSessionList(ctx *gin.Context, userID int64, session string) error {
 	if lengthSessionList < 3 {
 		// 列表长度<3，直接插入
 		if err := Client.RPush(ctx, cacheKey, session).Err(); err != nil {
-			logger.Logger.Error(fmt.Sprintf("Failed to rpush session into %s", cacheKey), err)
+			logger.Logger(ctx).Error(fmt.Sprintf("Failed to rpush session into %s", cacheKey), err)
 			return err
 		}
 	} else {
@@ -78,7 +78,7 @@ func SetSessionList(ctx *gin.Context, userID int64, session string) error {
 		if errors.Is(err, redis.Nil) {
 			// 如果为空，不用特别处理，但逻辑上来说已经判断length>=3，不会出现nil
 		} else if err != nil {
-			logger.Logger.Error(fmt.Sprintf("Failed to lpop from %s", cacheKey), err)
+			logger.Logger(ctx).Error(fmt.Sprintf("Failed to lpop from %s", cacheKey), err)
 			return err
 		} else {
 			// 这里可根据需求删除旧的session键值，如果需要的话
@@ -90,11 +90,11 @@ func SetSessionList(ctx *gin.Context, userID int64, session string) error {
 
 			// 插入新的session
 			if err := Client.RPush(ctx, cacheKey, session).Err(); err != nil {
-				logger.Logger.Error(fmt.Sprintf("Failed to rpush new session into %s", cacheKey), err)
+				logger.Logger(ctx).Error(fmt.Sprintf("Failed to rpush new session into %s", cacheKey), err)
 				return err
 			}
 
-			logger.Logger.Warning(
+			logger.Logger(ctx).Warning(
 				fmt.Sprintf("Session list for user %d is full, popping and deleting oldest session: %s",
 					userID, oldSession),
 			)

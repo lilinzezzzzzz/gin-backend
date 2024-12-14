@@ -10,30 +10,30 @@ import (
 // VerifySession checks if the given session is valid and returns the user data associated with it.
 func VerifySession(ctx *gin.Context, session string) (*entity.UserSessionData, bool) {
 	if session == "" {
-		logger.Logger.Warn("Token verification failed: token not found")
+		logger.Logger(ctx).Warn("Token verification failed: token not found")
 		return nil, false
 	}
 
 	userData, err := redis.GetSessionValue(ctx, session)
 	if err != nil {
-		logger.Logger.Warn("Token verification failed: error getting session userData: %v\n", err)
+		logger.Logger(ctx).Warn("Token verification failed: error getting session userData: %v\n", err)
 		return nil, false
 	}
 
 	if userData == nil {
-		logger.Logger.Warn("Token verification failed: session not found")
+		logger.Logger(ctx).Warn("Token verification failed: session not found")
 		return nil, false
 	}
 
 	sessionLstKey := redis.SessionLstCacheKey(userData.ID)
 	sessionLst, err := redis.GetListAll(ctx, sessionLstKey)
 	if err != nil {
-		logger.Logger.Warn("Token verification failed: error getting session list: %v\n", err)
+		logger.Logger(ctx).Warnf("Token verification failed: error getting session list: %v\n", err)
 		return nil, false
 	}
 
 	if sessionLst == nil {
-		logger.Logger.Warn("Token verification failed: session list nil for user_id: %d\n", userData.ID)
+		logger.Logger(ctx).Warnf("Token verification failed: session list nil for user_id: %d\n", userData.ID)
 		return nil, false
 	}
 
@@ -45,7 +45,7 @@ func VerifySession(ctx *gin.Context, session string) (*entity.UserSessionData, b
 		}
 	}
 	if !found {
-		logger.Logger.Warn("Token verification failed: session not found in session list, user_id: %d\n", userData.ID)
+		logger.Logger(ctx).Warn("Token verification failed: session not found in session list, user_id: %d\n", userData.ID)
 		return nil, false
 	}
 

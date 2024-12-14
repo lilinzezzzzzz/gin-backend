@@ -30,10 +30,10 @@ func InitRedis(cfg *setting.AppConfig) {
 	defer cancel()
 
 	if err := pingRedis(ctx); err != nil {
-		logger.Logger.Fatalf("Failed to connect to Redis: %v", err)
+		logger.BaseLogger.Fatalf("Failed to connect to Redis: %v", err)
 	}
 
-	logger.Logger.Info("Redis connected successfully")
+	logger.BaseLogger.Info("Redis connected successfully")
 }
 
 func pingRedis(ctx context.Context) error {
@@ -44,8 +44,8 @@ func pingRedis(ctx context.Context) error {
 // CloseRedis 关闭 Redis 连接
 func CloseRedis() {
 	if err := Client.Close(); err != nil {
-		logger.Logger.Errorf("Failed to close Redis connection: %v", err)
+		logger.BaseLogger.Errorf("Failed to close Redis connection: %v", err)
 	} else {
-		logger.Logger.Info("Redis connection closed successfully")
+		logger.BaseLogger.Info("Redis connection closed successfully")
 	}
 }

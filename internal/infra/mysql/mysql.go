@@ -26,13 +26,13 @@ func InitMySQL(cfg *setting.AppConfig) {
 
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		logger.Logger.Fatalf("Failed to connect to MySQL: %v", err)
+		logger.BaseLogger.Fatalf("Failed to connect to MySQL: %v", err)
 	}
 
 	// 获取底层的sql.DB对象
 	sqlDB, err := DB.DB()
 	if err != nil {
-		logger.Logger.Fatalf("Failed to get database instance: %v", err)
+		logger.BaseLogger.Fatalf("Failed to get database instance: %v", err)
 	}
 
 	// 设置连接池参数，根据项目实际需求进行调整
@@ -40,15 +40,15 @@ func InitMySQL(cfg *setting.AppConfig) {
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	logger.Logger.Println("MySQL connected successfully")
+	logger.BaseLogger.Println("MySQL connected successfully")
 }
 
 func CloseMySQL() {
 	sqlDB, err := DB.DB()
 	if err != nil {
-		logger.Logger.Fatalf("Failed to get database instance: %v", err)
+		logger.BaseLogger.Fatalf("Failed to get database instance: %v", err)
 	}
 	if err := sqlDB.Close(); err != nil {
-		logger.Logger.Fatalf("Failed to close MySQL connection: %v", err)
+		logger.BaseLogger.Fatalf("Failed to close MySQL connection: %v", err)
 	}
 }

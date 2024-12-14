@@ -17,8 +17,7 @@ type AuthController struct {
 
 func NewAuthController() *AuthController {
 	return &AuthController{
-		logger: logger.Logger,
-		serv:   services.NewAuthServ(),
+		serv: services.NewAuthServ(),
 	}
 }
 
@@ -52,7 +51,7 @@ func (a *AuthController) ManagerLogin(ctx *gin.Context) {
 func (a *AuthController) LoginOut(ctx *gin.Context) {
 	err := a.serv.LoginOut(ctx)
 	if err != nil {
-		logger.Error(ctx, fmt.Sprintf("LoginOut error: %v", err))
+		logger.Logger(ctx).Infof(fmt.Sprintf("LoginOut error: %v", err))
 		return
 	}
 

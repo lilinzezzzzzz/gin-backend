@@ -18,12 +18,12 @@ func LoggerMiddleware() gin.HandlerFunc {
 		ctx.Header("x-trace-id", traceID)
 		ctx.Set("trace_id", traceID)
 
-		logger.Infof(ctx,
+		logger.Logger(ctx).Infof(
 			"access log: %s|%s|%s|%s.", ctx.ClientIP(), ctx.Request.Method, ctx.Request.URL.Path, traceID)
 		startTime := time.Now()
 		// 处理请求
 		ctx.Next()
 		// 记录请求日志
-		logger.Infof(ctx, "response log: %d|%d.", ctx.Writer.Status(), time.Since(startTime))
+		logger.Logger(ctx).Infof("response log: %d|%d.", ctx.Writer.Status(), time.Since(startTime))
 	}
 }
