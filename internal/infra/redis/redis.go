@@ -45,8 +45,8 @@ func pingRedis(ctx context.Context) error {
 // CloseRedis 关闭 Redis 连接
 func CloseRedis() {
 	if err := Client.Close(); err != nil {
-		logger.BaseLogger.Errorf("Failed to close Redis connection: %v", err)
+		log.Printf("Failed to close Redis connection: %v", err)
 	} else {
-		logger.BaseLogger.Info("Redis connection closed successfully")
+		log.Println("Redis connection closed successfully")
 	}
 }
