@@ -52,6 +52,7 @@ func (a *AuthController) ManagerLogin(ctx *gin.Context) {
 func (a *AuthController) LoginOut(ctx *gin.Context) {
 	err := a.serv.LoginOut(ctx)
 	if err != nil {
+		logger.Error(ctx, fmt.Sprintf("LoginOut error: %v", err))
 		return
 	}
 

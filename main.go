@@ -43,7 +43,7 @@ func main() {
 	// 初始化 Gin 引擎
 	r := gin.New()
 	r.Use(gin.Recovery())
-	r.Use(middleware.LoggerMiddleware(logger.Logger))
+	r.Use(middleware.LoggerMiddleware())
 	r.Use(middleware.AuthMiddleware())
 
 	// 注册路由

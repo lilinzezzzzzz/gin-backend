@@ -41,7 +41,7 @@ func (f *CustomFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 	// 拼接日志内容
 	var b bytes.Buffer
-	b.WriteString(fmt.Sprintf("%s|%s|%s|%v| %s\n", timestamp, level, file, traceID, message))
+	b.WriteString(fmt.Sprintf("%s|%s|%s|%v|%s\n", timestamp, level, file, traceID, message))
 
 	return b.Bytes(), nil
 }
