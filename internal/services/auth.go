@@ -1,9 +1,11 @@
 package services
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"innoversepm-backend/internal/entity"
 	"innoversepm-backend/pkg/ctxHelper"
+	"innoversepm-backend/pkg/resp"
 )
 
 type AuthServ struct {
@@ -31,4 +33,9 @@ func (a *AuthServ) LoginByAccount(ctx *gin.Context, account string, password str
 
 func (a *AuthServ) LoginByPhone(ctx *gin.Context, phone string) (*entity.UserSessionData, error) {
 	return nil, nil
+}
+
+func (a *AuthServ) LoginOut(ctx *gin.Context) error {
+	resp.BadRequest(ctx, "not implement")
+	return errors.New("not implement")
 }

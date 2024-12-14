@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"innoversepm-backend/internal/entity"
@@ -35,7 +36,7 @@ func (a *AuthController) ManagerLogin(ctx *gin.Context) {
 	// 绑定请求体到 LoginRequest 结构体
 	var loginReq entity.LoginRequest
 	if err := ctx.ShouldBindJSON(&loginReq); err != nil {
-		resp.BadRequest(ctx, "Invalid request parameters")
+		resp.BadRequest(ctx, fmt.Sprintf("Invalid request parameters: %v", err))
 		return
 	}
 
@@ -45,4 +46,14 @@ func (a *AuthController) ManagerLogin(ctx *gin.Context) {
 		return
 	}
 	resp.Success(ctx, session)
+}
+
+// LoginOut 登出
+func (a *AuthController) LoginOut(ctx *gin.Context) {
+	err := a.serv.LoginOut(ctx)
+	if err != nil {
+		return
+	}
+
+	resp.Success(ctx, 0)
 }
