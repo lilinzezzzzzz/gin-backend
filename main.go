@@ -44,7 +44,6 @@ func main() {
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(middleware.LoggerMiddleware(logger.Logger))
-	r.Use(middleware.TraceMiddleware())
 	r.Use(middleware.AuthMiddleware())
 
 	// 注册路由
