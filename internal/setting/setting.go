@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"log"
+	"time"
 )
 
 var Config *AppConfig
@@ -25,11 +26,14 @@ type App struct {
 
 // MySQL 配置
 type MySQL struct {
-	Username string `mapstructure:"username"`
-	Password string `mapstructure:"password"`
-	Host     string `mapstructure:"host"`
-	Port     int    `mapstructure:"port"`
-	Name     string `mapstructure:"name"`
+	Username        string `mapstructure:"username"`
+	Password        string `mapstructure:"password"`
+	Host            string `mapstructure:"host"`
+	Port            int    `mapstructure:"port"`
+	DBName          string `mapstructure:"name"`
+	MaxOpenConns    int
+	MaxIdleConns    int
+	ConnMaxLifetime time.Duration
 }
 
 // Database 配置，包含多个数据库配置

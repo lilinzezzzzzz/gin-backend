@@ -10,14 +10,20 @@ database:
     password: "F4ASxTobZXY4"
     host: "62.234.73.208"
     port: 23306
-    name: "innoversepm"
+    dbname: "innoversepm"
+    max_open_conns: 50
+    max_idle_conns: 10
+    conn_max_lifetime: "60s"
 
   design_gpt_mysql:
     username: "innoverse"
     password: "Innoverse012"
     host: "62.234.73.208"
     port: 13306
-    name: "innoverse_v3_backend"
+    dbname: "innoverse_v3_backend"
+    max_open_conns: 50
+    max_idle_conns: 10
+    conn_max_lifetime: "60s"
 
 redis:
   host: "62.234.73.208"
