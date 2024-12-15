@@ -19,6 +19,7 @@ type User struct {
 	Account     string     `gorm:"size:20"`              // 对应 account 字段，字符串长度为 20
 	Username    string     `gorm:"size:64"`              // 对应 username 字段，字符串长度为 64
 	Phone       string     `gorm:"size:11"`              // 对应 phone 字段，字符串长度为 11
+	Password    string     `gorm:"size:128"`             // 对应 password 字段，字符串长度为 128
 	AvatarURL   string     `gorm:"size:255"`             // 对应 avatar_url 字段，字符串长度为 255
 	Status      string     `gorm:"size:16"`              // 对应 status 字段，字符串长度为 16
 	Email       string     `gorm:"size:255"`             // 对应 email 字段，字符串长度为 255

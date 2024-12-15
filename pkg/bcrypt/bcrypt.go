@@ -1,6 +1,8 @@
 package bcrypt
 
 import (
+	"errors"
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -15,7 +17,10 @@ func HashPassword(password string) (string, error) {
 }
 
 // VerifyPassword 验证密码是否匹配。
-func VerifyPassword(plainPassword, hashedPassword string) bool {
+func VerifyPassword(plainPassword, hashedPassword string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
-	return err == nil
+	if err != nil {
+		return errors.New(fmt.Sprintf("verify password err: %v", err))
+	}
+	return nil
 }
