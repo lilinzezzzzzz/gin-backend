@@ -35,7 +35,7 @@ func NewJWTService(cfg *setting.AppConfig) *JwtService {
 }
 
 // CreateToken 创建一个新的JWT令牌
-func (j *JwtService) CreateToken(c *gin.Context, userID int, userName string) (string, error) {
+func (j *JwtService) CreateToken(ctx *gin.Context, userID int, userName string) (string, error) {
 	expirationTime := time.Now().UTC().Add(time.Duration(j.expireMinutes) * time.Minute)
 
 	claims := &Claims{
@@ -51,6 +51,7 @@ func (j *JwtService) CreateToken(c *gin.Context, userID int, userName string) (s
 	token := jwt.NewWithClaims(jwt.GetSigningMethod(j.jwtAlgorithm), claims)
 	tokenString, err := token.SignedString([]byte(j.secretKey))
 	if err != nil {
+		logger.Logger(ctx).Errorf("token.SignedString err: %v", err)
 		return "", err
 	}
 
@@ -58,9 +59,9 @@ func (j *JwtService) CreateToken(c *gin.Context, userID int, userName string) (s
 }
 
 // VerifyToken 验证JWT令牌并返回用户ID
-func (j *JwtService) VerifyToken(c *gin.Context, tokenStr string) (int, bool) {
+func (j *JwtService) VerifyToken(ctx *gin.Context, tokenStr string) (int, bool) {
 	if tokenStr == "" || !strings.HasPrefix(tokenStr, "Bearer ") {
-		logger.Logger.Warn("Token verification failed: token is empty or does not start with Bearer")
+		logger.Logger(ctx).Warn("Token verification failed: token is empty or does not start with Bearer")
 		return 0, false
 	}
 
@@ -77,15 +78,15 @@ func (j *JwtService) VerifyToken(c *gin.Context, tokenStr string) (int, bool) {
 
 	if err != nil {
 		if errors.Is(err, jwt.ErrTokenExpired) {
-			logger.Logger.Warn("Token verification failed: token expired")
+			logger.Logger(ctx).Warn("Token verification failed: token expired")
 			return 0, false
 		}
-		logger.Logger.Warn("Token verification failed: invalid token")
+		logger.Logger(ctx).Warn("Token verification failed: invalid token")
 		return 0, false
 	}
 
 	if !token.Valid {
-		logger.Logger.Warn("Token verification failed: token is invalid")
+		logger.Logger(ctx).Warn("Token verification failed: token is invalid")
 		return 0, false
 	}
 

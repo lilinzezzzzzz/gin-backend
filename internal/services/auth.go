@@ -21,7 +21,7 @@ func NewAuthServ() *AuthServ {
 }
 
 func (a *AuthServ) UserSessionData(ctx *gin.Context) (*entity.UserSessionData, error) {
-	userData, err := ctxHelper.GetUserData(ctx)
+	userData, err := ctxhelper.GetUserData(ctx)
 	if err != nil {
 		return nil, err
 	}
