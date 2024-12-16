@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/natefinch/lumberjack"
 	"github.com/sirupsen/logrus"
+	"innoversepm-backend/pkg/constants"
 	"io"
 	"log"
 	"os"
@@ -96,28 +97,32 @@ func InitLogrus(env string) {
 	}
 
 	BaseLogger = logrus.New()
-	var formatter *CustomFormatter
+	var (
+		formatter *CustomFormatter
+		writer    io.Writer
+	)
 	switch env {
-	case "dev", "local":
+	case constants.DevEnvVal, constants.LocalEnvVal:
 		// 创建带颜色的控制台 Formatter
 		formatter = &CustomFormatter{EnableColor: true}
+		writer = os.Stdout
 	default:
 		// 创建不带颜色的文件 Formatter
 		formatter = &CustomFormatter{EnableColor: false}
-	}
-
-	// 配置按天切割的日志文件
-	logFile := &lumberjack.Logger{
-		Filename:   fmt.Sprintf("%s/app-%s.log", logDir, time.Now().Format("2006-01-02")),
-		MaxSize:    10,   // 单个日志文件的最大大小（MB）
-		MaxAge:     7,    // 保留旧日志的最大天数
-		MaxBackups: 30,   // 保留旧日志的最大数量
-		LocalTime:  true, // 使用本地时间
-		Compress:   true, // 是否压缩旧日志
+		// 配置按天切割的日志文件
+		logFile := &lumberjack.Logger{
+			Filename:   fmt.Sprintf("%s/app-%s.log", logDir, time.Now().Format("2006-01-02")),
+			MaxSize:    10,   // 单个日志文件的最大大小（MB）
+			MaxAge:     7,    // 保留旧日志的最大天数
+			MaxBackups: 30,   // 保留旧日志的最大数量
+			LocalTime:  true, // 使用本地时间
+			Compress:   true, // 是否压缩旧日志
+		}
+		writer = logFile
 	}
 
 	// 设置 BaseLogger 同时输出到控制台和文件
-	BaseLogger.SetOutput(io.MultiWriter(os.Stdout, logFile))
+	BaseLogger.SetOutput(io.MultiWriter(writer))
 	// 启用调用者信息
 	BaseLogger.SetReportCaller(true)
 	BaseLogger.SetFormatter(formatter)

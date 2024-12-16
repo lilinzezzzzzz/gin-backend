@@ -7,6 +7,7 @@ import (
 	"innoversepm-backend/internal/middleware"
 	"innoversepm-backend/internal/routers"
 	"innoversepm-backend/internal/setting"
+	"innoversepm-backend/pkg/constants"
 	"innoversepm-backend/pkg/logger"
 	"log"
 	"os"
@@ -16,11 +17,11 @@ import (
 func main() {
 	env := strings.ToLower(os.Getenv("GO_ENV"))
 	switch env {
-	case "dev", "local":
+	case constants.DevEnvVal, constants.LocalEnvVal:
 		gin.SetMode(gin.DebugMode)
-	case "test":
+	case constants.TestEnvVal:
 		gin.SetMode(gin.TestMode)
-	case "prod":
+	case constants.ProdEnvVal:
 		gin.SetMode(gin.ReleaseMode)
 	default:
 		log.Fatal("Invalid environment specified")
