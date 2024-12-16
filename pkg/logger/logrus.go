@@ -3,12 +3,14 @@ package logger
 import (
 	"bytes"
 	"fmt"
+	"github.com/natefinch/lumberjack"
 	"github.com/sirupsen/logrus"
 	"io"
 	"log"
 	"os"
 	"path"
 	"strings"
+	"time"
 )
 
 var BaseLogger *logrus.Logger
@@ -30,7 +32,6 @@ type CustomFormatter struct {
 	EnableColor bool // 是否启用颜色
 }
 
-// Format 实现 logrus.Formatter 接口
 // Format 实现 logrus.Formatter 接口
 func (f *CustomFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	// 获取时间戳并格式化
@@ -84,8 +85,16 @@ func (f *CustomFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 }
 
 // InitLogrus 初始化 Logrus 日志配置
-// InitLogrus 初始化 Logrus 日志配置
 func InitLogrus() {
+	// 检查并创建 logs 目录
+	logDir := "logs"
+	if _, err := os.Stat(logDir); os.IsNotExist(err) {
+		err := os.MkdirAll(logDir, os.ModePerm)
+		if err != nil {
+			log.Fatalf("Failed to create logs directory: %v", err)
+		}
+	}
+
 	BaseLogger = logrus.New()
 
 	// 启用调用者信息
@@ -94,30 +103,21 @@ func InitLogrus() {
 	// 创建带颜色的控制台 Formatter
 	consoleFormatter := &CustomFormatter{EnableColor: true}
 
-	// 创建不带颜色的文件 Formatter
-	fileFormatter := &CustomFormatter{EnableColor: false}
-
 	// 设置控制台输出
 	consoleOutput := os.Stdout
-	consoleLogger := logrus.New()
-	consoleLogger.SetOutput(consoleOutput)
-	consoleLogger.SetFormatter(consoleFormatter)
-	consoleLogger.SetLevel(logrus.InfoLevel)
-	consoleLogger.SetReportCaller(true)
 
-	// 设置文件输出
-	file, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalf("set file err: %v", err.Error())
+	// 配置按天切割的日志文件
+	logFile := &lumberjack.Logger{
+		Filename:   fmt.Sprintf("logs/app-%s.log", time.Now().Format("2006-01-02")),
+		MaxSize:    10,   // 单个日志文件的最大大小（MB）
+		MaxAge:     7,    // 保留旧日志的最大天数
+		MaxBackups: 30,   // 保留旧日志的最大数量
+		LocalTime:  true, // 使用本地时间
+		Compress:   true, // 是否压缩旧日志
 	}
 
-	fileLogger := logrus.New()
-	fileLogger.SetOutput(file)
-	fileLogger.SetFormatter(fileFormatter)
-	fileLogger.SetLevel(logrus.InfoLevel)
-	fileLogger.SetReportCaller(true)
-
-	// 多路输出到控制台和文件
-	BaseLogger.SetOutput(io.MultiWriter(consoleOutput, file))
+	// 设置控制台和文件多路输出
+	BaseLogger.SetOutput(io.MultiWriter(consoleOutput, logFile))
 	BaseLogger.SetFormatter(consoleFormatter)
+	BaseLogger.SetLevel(logrus.InfoLevel)
 }

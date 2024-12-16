@@ -51,7 +51,7 @@ func (dao *UserDao) GetUserByID(ctx *gin.Context, id uint) (*models.User, error)
 func (dao *UserDao) GetUserByAccount(ctx *gin.Context, account string) (*models.User, error) {
 	var user models.User
 	if err := dao.db.Where("account = ?", account).First(&user).Error; err != nil {
-		dao.logger(ctx).Errorf("Error fetching user by account: %v", err)
+		dao.logger(ctx).Errorf("Error fetching user by account: %+v", err)
 		return nil, err
 	}
 	return &user, nil
@@ -60,7 +60,7 @@ func (dao *UserDao) GetUserByAccount(ctx *gin.Context, account string) (*models.
 // UpdateUser 更新用户信息
 func (dao *UserDao) UpdateUser(ctx *gin.Context, user *models.User) error {
 	if err := dao.db.Save(user).Error; err != nil {
-		logger.Logger(ctx).Errorf("Error updating user: %v", err)
+		logger.Logger(ctx).Errorf("Error updating user: %+v", err)
 		return err
 	}
 	return nil
@@ -69,7 +69,7 @@ func (dao *UserDao) UpdateUser(ctx *gin.Context, user *models.User) error {
 // DeleteUserByID 软删除用户
 func (dao *UserDao) DeleteUserByID(ctx *gin.Context, id uint) error {
 	if err := dao.db.Delete(&models.User{}, id).Error; err != nil {
-		dao.logger(ctx).Errorf("Error deleting user: %v", err)
+		dao.logger(ctx).Errorf("Error deleting user: %+v", err)
 		return err
 	}
 	return nil

@@ -16,7 +16,7 @@ func VerifySession(ctx *gin.Context, session string) (*entity.UserSessionData, b
 
 	userData, err := dao.GetSessionValue(ctx, session)
 	if err != nil {
-		logger.Logger(ctx).Warn("Token verification failed: error getting session userData: %v\n", err)
+		logger.Logger(ctx).Warnf("Token verification failed: error getting session userData: %v\n", err)
 		return nil, false
 	}
 
@@ -45,7 +45,7 @@ func VerifySession(ctx *gin.Context, session string) (*entity.UserSessionData, b
 		}
 	}
 	if !found {
-		logger.Logger(ctx).Warn("Token verification failed: session not found in session list, user_id: %d\n", userData.ID)
+		logger.Logger(ctx).Warnf("Token verification failed: session not found in session list, user_id: %d\n", userData.ID)
 		return nil, false
 	}
 

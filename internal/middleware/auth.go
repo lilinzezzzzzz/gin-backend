@@ -31,6 +31,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		for _, path := range notSessionAuthPaths {
 			if urlPath == path || strings.HasPrefix(urlPath, "/docs") {
 				ctx.Next()
+				return
 			}
 		}
 
@@ -46,6 +47,7 @@ func AuthMiddleware() gin.HandlerFunc {
 				return
 			}
 			ctx.Next()
+			return
 		}
 
 		// 3. Session 校验
@@ -58,6 +60,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		if strings.HasPrefix(urlPath, "/v1") {
 			ctx.Next()
+			return
 		}
 
 		if userData.Category != constants.UserManager {
@@ -68,5 +71,6 @@ func AuthMiddleware() gin.HandlerFunc {
 		// 将用户信息存储到上下文中
 		ctx.Set("user_data", userData)
 		ctx.Next()
+		return
 	}
 }

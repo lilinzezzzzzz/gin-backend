@@ -33,8 +33,8 @@ func (a *AuthService) LoginByAccount(ctx *gin.Context, account string, password 
 	if err != nil {
 		return nil, err
 	}
+
 	if err := bcrypt.VerifyPassword(password, user.Password); err != nil {
-		resp.UNAUTHORIZED(ctx, err.Error())
 		return nil, err
 	}
 
