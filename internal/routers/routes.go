@@ -14,4 +14,9 @@ func RegisterRoutes(r *gin.Engine) {
 		authGroup.POST("/login", authController.ManagerLogin)
 		authGroup.PUT("/logout", authController.LoginOut)
 	}
+	userGroup := r.Group("/user_manager")
+	userController := controllers.NewUserController()
+	{
+		userGroup.GET("/user/:user_id", userController.UserDetail)
+	}
 }

@@ -1,10 +1,10 @@
-package mysql
+package dao
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"innoversepm-backend/internal/infra/mysql"
+	"innoversepm-backend/internal/infra"
 	"innoversepm-backend/internal/models"
 	"innoversepm-backend/pkg/logger"
 )
@@ -23,7 +23,7 @@ type UserDao struct {
 // NewUserDao 创建 UserDao 实例
 func NewUserDao() *UserDao {
 	return &UserDao{
-		db:     mysql.DB,
+		db:     infra.DB,
 		logger: logger.Logger,
 	}
 }
@@ -83,7 +83,7 @@ type ManagerUserDao struct {
 // NewManagerUserDao 创建 UserDao 实例
 func NewManagerUserDao() *UserDao {
 	return &UserDao{
-		db:     mysql.DB,
+		db:     infra.DB,
 		logger: logger.Logger,
 	}
 }

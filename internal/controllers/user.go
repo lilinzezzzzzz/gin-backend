@@ -1,1 +1,25 @@
 package controllers
+
+import (
+	"github.com/gin-gonic/gin"
+	"innoversepm-backend/internal/services"
+	"innoversepm-backend/pkg/resp"
+)
+
+type UserController struct {
+	srv *services.UserService
+}
+
+func NewUserController() *UserController {
+	return &UserController{
+		srv: services.NewUserService(),
+	}
+}
+
+func (u *UserController) UserDetail(ctx *gin.Context) {
+	user, err := u.srv.UserDetail(ctx, 0)
+	if err != nil {
+		return
+	}
+	resp.Success(ctx, user)
+}

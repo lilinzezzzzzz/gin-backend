@@ -2,16 +2,9 @@ package models
 
 import (
 	"gorm.io/gorm"
+	"innoversepm-backend/pkg/snowflake"
 	"time"
 )
-
-// ManageUser 模型
-type ManageUser struct {
-	gorm.Model        // 包含 ID、CreatedAt、UpdatedAt、DeletedAt 字段
-	Account    string `gorm:"size:32"`  // 对应 account 字段，字符串长度为 32
-	Username   string `gorm:"size:32"`  // 对应 username 字段，字符串长度为 32
-	Password   string `gorm:"size:128"` // 对应 password 字段，字符串长度为 128
-}
 
 // User 模型
 type User struct {
@@ -30,4 +23,18 @@ type User struct {
 	Category    string     `gorm:"size:16"`              // 对应 category 字段，字符串长度为 16
 	VIPLevel    string     `gorm:"size:16"`              // 对应 vip_level 字段，字符串长度为 16
 	LastLoginAt *time.Time `gorm:"column:last_login_at"` // 对应 last_login_at 字段，时间类型
+}
+
+// BeforeCreate 钩子，在创建记录前生成雪花 ID
+func (u *User) BeforeCreate(_ *gorm.DB) error {
+	u.ID = snowflake.GenerateSnowflakeID()
+	u.CreatedAt = time.Now().UTC()
+	u.UpdatedAt = time.Now().UTC()
+	return nil
+}
+
+// BeforeUpdate 钩子，在更新记录前将 UpdatedAt 设置为 UTC 时间
+func (u *User) BeforeUpdate(_ *gorm.DB) (err error) {
+	u.UpdatedAt = time.Now().UTC()
+	return nil
 }

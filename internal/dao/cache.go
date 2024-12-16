@@ -1,4 +1,4 @@
-package redis
+package dao
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"innoversepm-backend/internal/entity"
+	"innoversepm-backend/internal/infra"
 	"innoversepm-backend/pkg/logger"
 	"time"
 
@@ -68,13 +69,13 @@ func SetSessionList(ctx *gin.Context, userID int64, session string) error {
 	// 不需要获取新连接，go-redis是并发安全的，多次使用Client即可
 	if lengthSessionList < 3 {
 		// 列表长度<3，直接插入
-		if err := Client.RPush(ctx, cacheKey, session).Err(); err != nil {
+		if err := infra.Client.RPush(ctx, cacheKey, session).Err(); err != nil {
 			logger.Logger(ctx).Error(fmt.Sprintf("Failed to rpush session into %s", cacheKey), err)
 			return err
 		}
 	} else {
 		// 长度>=3，弹出旧的session
-		oldSession, err := Client.LPop(ctx, cacheKey).Result()
+		oldSession, err := infra.Client.LPop(ctx, cacheKey).Result()
 		if errors.Is(err, redis.Nil) {
 			// 如果为空，不用特别处理，但逻辑上来说已经判断length>=3，不会出现nil
 		} else if err != nil {
@@ -89,7 +90,7 @@ func SetSessionList(ctx *gin.Context, userID int64, session string) error {
 			// }
 
 			// 插入新的session
-			if err := Client.RPush(ctx, cacheKey, session).Err(); err != nil {
+			if err := infra.Client.RPush(ctx, cacheKey, session).Err(); err != nil {
 				logger.Logger(ctx).Error(fmt.Sprintf("Failed to rpush new session into %s", cacheKey), err)
 				return err
 			}
@@ -106,12 +107,12 @@ func SetSessionList(ctx *gin.Context, userID int64, session string) error {
 
 // SetValue 在Redis中设置键值对，并支持过期时间
 func SetValue(ctx *gin.Context, key string, value interface{}, expiration time.Duration) error {
-	return Client.Set(ctx, key, value, expiration).Err()
+	return infra.Client.Set(ctx, key, value, expiration).Err()
 }
 
 // GetValue 从Redis中获取字符串类型的值
 func GetValue(ctx *gin.Context, key string) (string, error) {
-	val, err := Client.Get(ctx, key).Result()
+	val, err := infra.Client.Get(ctx, key).Result()
 	if errors.Is(err, redis.Nil) {
 		// 键不存在时，Get返回redis.Nil
 		return "", nil
@@ -121,12 +122,12 @@ func GetValue(ctx *gin.Context, key string) (string, error) {
 
 // DeleteKey 删除指定的键
 func DeleteKey(ctx *gin.Context, key string) error {
-	return Client.Del(ctx, key).Err()
+	return infra.Client.Del(ctx, key).Err()
 }
 
 // CheckKeyExists 检查键是否存在
 func CheckKeyExists(ctx *gin.Context, key string) (bool, error) {
-	count, err := Client.Exists(ctx, key).Result()
+	count, err := infra.Client.Exists(ctx, key).Result()
 	if err != nil {
 		return false, err
 	}
@@ -135,27 +136,27 @@ func CheckKeyExists(ctx *gin.Context, key string) (bool, error) {
 
 // IncrementCounter 将指定key的值（应为整数）+1，如果key不存在则从0开始
 func IncrementCounter(ctx *gin.Context, key string) (int64, error) {
-	return Client.Incr(ctx, key).Result()
+	return infra.Client.Incr(ctx, key).Result()
 }
 
 // DecrementCounter 将指定key的值（应为整数）-1
 func DecrementCounter(ctx *gin.Context, key string) (int64, error) {
-	return Client.Decr(ctx, key).Result()
+	return infra.Client.Decr(ctx, key).Result()
 }
 
 // ExpireKey 为指定key设置过期时间
 func ExpireKey(ctx *gin.Context, key string, expiration time.Duration) (bool, error) {
-	return Client.Expire(ctx, key, expiration).Result()
+	return infra.Client.Expire(ctx, key, expiration).Result()
 }
 
 // SetHash 设置哈希类型的字段值
 func SetHash(ctx *gin.Context, key, field string, value interface{}) error {
-	return Client.HSet(ctx, key, field, value).Err()
+	return infra.Client.HSet(ctx, key, field, value).Err()
 }
 
 // GetHashField 获取哈希类型某个字段的值
 func GetHashField(ctx *gin.Context, key, field string) (string, error) {
-	val, err := Client.HGet(ctx, key, field).Result()
+	val, err := infra.Client.HGet(ctx, key, field).Result()
 	if errors.Is(err, redis.Nil) {
 		return "", nil
 	}
@@ -164,17 +165,17 @@ func GetHashField(ctx *gin.Context, key, field string) (string, error) {
 
 // GetAllHash 获取哈希所有字段值
 func GetAllHash(ctx *gin.Context, key string) (map[string]string, error) {
-	return Client.HGetAll(ctx, key).Result()
+	return infra.Client.HGetAll(ctx, key).Result()
 }
 
 // PushToList 向列表左侧插入元素
 func PushToList(ctx *gin.Context, key string, values ...interface{}) (int64, error) {
-	return Client.LPush(ctx, key, values...).Result()
+	return infra.Client.LPush(ctx, key, values...).Result()
 }
 
 // PopFromList 从列表左侧弹出元素
 func PopFromList(ctx *gin.Context, key string) (string, error) {
-	val, err := Client.LPop(ctx, key).Result()
+	val, err := infra.Client.LPop(ctx, key).Result()
 	if errors.Is(err, redis.Nil) {
 		return "", nil
 	}
@@ -183,5 +184,5 @@ func PopFromList(ctx *gin.Context, key string) (string, error) {
 
 // GetListAll 获取列表所有元素
 func GetListAll(ctx *gin.Context, key string) ([]string, error) {
-	return Client.LRange(ctx, key, 0, -1).Result()
+	return infra.Client.LRange(ctx, key, 0, -1).Result()
 }

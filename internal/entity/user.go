@@ -1,12 +1,7 @@
 package entity
 
-import (
-	"innoversepm-backend/internal/models"
-	"time"
-)
-
-// UserDTO 用于传输 User 数据的结构体
-type UserDTO struct {
+// UserEntity 用于传输 User 数据的结构体
+type UserEntity struct {
 	ID          uint    `json:"id"`            // 用户 ID
 	Account     string  `json:"account"`       // 账号
 	Username    string  `json:"username"`      // 用户名
@@ -25,42 +20,4 @@ type UserDTO struct {
 	CreatedAt   string  `json:"created_at"`    // 创建时间
 	UpdatedAt   string  `json:"updated_at"`    // 更新时间
 	DeletedAt   *string `json:"deleted_at"`    // 删除时间
-}
-
-// ToUserDTO 将 models.User 转换为 entity.UserDTO
-// ToUserDTO 将 models.User 转换为 entity.UserDTO，所有时间字段转换为 ISO 8601 格式
-func ToUserDTO(user models.User) UserDTO {
-	var lastLoginAt, deletedAt *string
-
-	// 转换 LastLoginAt 为 ISO 8601 格式
-	if user.LastLoginAt != nil {
-		formatted := user.LastLoginAt.Format(time.RFC3339) // 使用 RFC3339 格式，即 ISO 8601
-		lastLoginAt = &formatted
-	}
-
-	// 转换 DeletedAt 为 ISO 8601 格式
-	if user.DeletedAt.Valid {
-		formatted := user.DeletedAt.Time.Format(time.RFC3339)
-		deletedAt = &formatted
-	}
-
-	return UserDTO{
-		ID:          user.ID,
-		Account:     user.Account,
-		Username:    user.Username,
-		Phone:       user.Phone,
-		AvatarURL:   user.AvatarURL,
-		Status:      user.Status,
-		Email:       user.Email,
-		Company:     user.Company,
-		Department:  user.Department,
-		Role:        user.Role,
-		Channel:     user.Channel,
-		Category:    user.Category,
-		VIPLevel:    user.VIPLevel,
-		LastLoginAt: lastLoginAt,
-		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
-		DeletedAt:   deletedAt,
-	}
 }

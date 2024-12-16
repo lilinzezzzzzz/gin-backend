@@ -2,8 +2,8 @@ package core
 
 import (
 	"github.com/gin-gonic/gin"
+	"innoversepm-backend/internal/dao"
 	"innoversepm-backend/internal/entity"
-	"innoversepm-backend/internal/infra/redis"
 	"innoversepm-backend/pkg/logger"
 )
 
@@ -14,7 +14,7 @@ func VerifySession(ctx *gin.Context, session string) (*entity.UserSessionData, b
 		return nil, false
 	}
 
-	userData, err := redis.GetSessionValue(ctx, session)
+	userData, err := dao.GetSessionValue(ctx, session)
 	if err != nil {
 		logger.Logger(ctx).Warn("Token verification failed: error getting session userData: %v\n", err)
 		return nil, false
@@ -25,8 +25,8 @@ func VerifySession(ctx *gin.Context, session string) (*entity.UserSessionData, b
 		return nil, false
 	}
 
-	sessionLstKey := redis.SessionLstCacheKey(userData.ID)
-	sessionLst, err := redis.GetListAll(ctx, sessionLstKey)
+	sessionLstKey := dao.SessionLstCacheKey(userData.ID)
+	sessionLst, err := dao.GetListAll(ctx, sessionLstKey)
 	if err != nil {
 		logger.Logger(ctx).Warnf("Token verification failed: error getting session list: %v\n", err)
 		return nil, false

@@ -12,12 +12,12 @@ import (
 
 type AuthController struct {
 	logger *logrus.Logger
-	serv   *services.AuthServ
+	serv   *services.AuthService
 }
 
 func NewAuthController() *AuthController {
 	return &AuthController{
-		serv: services.NewAuthServ(),
+		serv: services.NewAuthService(),
 	}
 }
 
