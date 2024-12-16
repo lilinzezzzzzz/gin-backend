@@ -29,7 +29,7 @@ func main() {
 	setting.LoadConfig(env)
 
 	// 初始化日志
-	logger.InitLogrus()
+	logger.InitLogrus(env)
 
 	// 初始化 MySQL
 	infra.InitMySQL(setting.Config)

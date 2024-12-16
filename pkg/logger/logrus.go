@@ -35,7 +35,7 @@ type CustomFormatter struct {
 // Format 实现 logrus.Formatter 接口
 func (f *CustomFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	// 获取时间戳并格式化
-	timestamp := entry.Time.Format("2006-01-02 15:04:05 -0700")
+	timestamp := entry.Time.Format(time.RFC3339)
 
 	// 获取日志级别和对应颜色
 	level := strings.ToUpper(entry.Level.String())
@@ -85,7 +85,7 @@ func (f *CustomFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 }
 
 // InitLogrus 初始化 Logrus 日志配置
-func InitLogrus() {
+func InitLogrus(env string) {
 	// 检查并创建 logs 目录
 	logDir := "logs"
 	if _, err := os.Stat(logDir); os.IsNotExist(err) {
@@ -96,19 +96,19 @@ func InitLogrus() {
 	}
 
 	BaseLogger = logrus.New()
-
-	// 启用调用者信息
-	BaseLogger.SetReportCaller(true)
-
-	// 创建带颜色的控制台 Formatter
-	consoleFormatter := &CustomFormatter{EnableColor: true}
-
-	// 设置控制台输出
-	consoleOutput := os.Stdout
+	var formatter *CustomFormatter
+	switch env {
+	case "dev", "local":
+		// 创建带颜色的控制台 Formatter
+		formatter = &CustomFormatter{EnableColor: true}
+	default:
+		// 创建不带颜色的文件 Formatter
+		formatter = &CustomFormatter{EnableColor: false}
+	}
 
 	// 配置按天切割的日志文件
 	logFile := &lumberjack.Logger{
-		Filename:   fmt.Sprintf("logs/app-%s.log", time.Now().Format("2006-01-02")),
+		Filename:   fmt.Sprintf("%s/app-%s.log", logDir, time.Now().Format("2006-01-02")),
 		MaxSize:    10,   // 单个日志文件的最大大小（MB）
 		MaxAge:     7,    // 保留旧日志的最大天数
 		MaxBackups: 30,   // 保留旧日志的最大数量
@@ -116,8 +116,10 @@ func InitLogrus() {
 		Compress:   true, // 是否压缩旧日志
 	}
 
-	// 设置控制台和文件多路输出
-	BaseLogger.SetOutput(io.MultiWriter(consoleOutput, logFile))
-	BaseLogger.SetFormatter(consoleFormatter)
+	// 设置 BaseLogger 同时输出到控制台和文件
+	BaseLogger.SetOutput(io.MultiWriter(os.Stdout, logFile))
+	// 启用调用者信息
+	BaseLogger.SetReportCaller(true)
+	BaseLogger.SetFormatter(formatter)
 	BaseLogger.SetLevel(logrus.InfoLevel)
 }
