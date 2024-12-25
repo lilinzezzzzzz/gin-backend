@@ -5,9 +5,8 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"innoversepm-backend/internal/setting"
-	"innoversepm-backend/pkg/logger"
 	"sort"
 	"strconv"
 	"strings"
@@ -31,7 +30,7 @@ func NewSignatureSrv(cfg *setting.AppConfig) *SignatureSrv {
 }
 
 // GenerateSignature 生成签名
-func (s *SignatureSrv) GenerateSignature(ctx *gin.Context, timestamp, nonce string) (string, error) {
+func (s *SignatureSrv) GenerateSignature(timestamp, nonce string) (string, error) {
 	// 对数据进行排序，确保签名一致性
 	data := map[string]string{
 		"timestamp": timestamp,
@@ -64,50 +63,49 @@ func (s *SignatureSrv) GenerateSignature(ctx *gin.Context, timestamp, nonce stri
 }
 
 // VerifySignature 验证签名
-func (s *SignatureSrv) VerifySignature(ctx *gin.Context, timestamp, signature, nonce string) bool {
-	expectedSignature, err := s.GenerateSignature(ctx, timestamp, nonce)
+func (s *SignatureSrv) VerifySignature(timestamp, signature, nonce string) (bool, error) {
+	expectedSignature, err := s.GenerateSignature(timestamp, nonce)
 	if err != nil {
-		logger.Logger(ctx).Printf("VerifySignature generate expected signature error: %v", err)
-		return false
+		return false, err
 	}
 
 	// 使用hmac.Equal进行常量时间比较
-	return hmac.Equal([]byte(expectedSignature), []byte(signature))
+	return hmac.Equal([]byte(expectedSignature), []byte(signature)), nil
 }
 
 // IsTimestampValid 验证时间戳是否有效
-func (s *SignatureSrv) IsTimestampValid(ctx *gin.Context, requestTimeStr string) (bool, error) {
+func (s *SignatureSrv) IsTimestampValid(requestTimeStr string) (bool, error) {
 	requestTime, err := strconv.ParseInt(requestTimeStr, 10, 64)
 	if err != nil {
-		logger.Logger(ctx).Printf("IsTimestampValid failed: %v", err)
 		return false, err
 	}
 
 	currentTime := time.Now().Unix()
 	if (currentTime - requestTime) > s.timestampTolerance {
-		logger.Logger(ctx).Printf("invalid timestamp, request_time: %d, current_time: %d", requestTime, currentTime)
-		return false, nil
+		return false, fmt.Errorf("invalid timestamp, request_time: %d, current_time: %d", requestTime, currentTime)
 	}
 
 	return true, nil
 }
 
 // VerifySignatureData 将原先独立的VerifySignatureFunc逻辑整合到HMACSigner的方法中
-func (s *SignatureSrv) VerifySignatureData(ctx *gin.Context, xSignature, xTimestamp, xNonce string) (bool, error) {
+func (s *SignatureSrv) VerifySignatureData(xSignature, xTimestamp, xNonce string) (bool, error) {
 	// 检查时间戳，防止重放攻击
-	valid, err := s.IsTimestampValid(ctx, xTimestamp)
+	valid, err := s.IsTimestampValid(xTimestamp)
 	if err != nil {
 		return false, err
 	}
 	if !valid {
-		logger.Logger(ctx).Printf("invalid timestamp: %s", xTimestamp)
-		return false, nil
+		return false, fmt.Errorf("invalid timestamp: %s", xTimestamp)
 	}
 
 	// 检查签名是否有效
-	if !s.VerifySignature(ctx, xTimestamp, xSignature, xNonce) {
-		logger.Logger(ctx).Printf("invalid signature: timestamp: %s, nonce: %s, signature: %s", xTimestamp, xNonce, xSignature)
-		return false, nil
+	ok, err := s.VerifySignature(xTimestamp, xSignature, xNonce)
+	if err != nil {
+		return false, err
+	}
+	if !ok {
+		return false, fmt.Errorf("invalid signature: timestamp: %s, nonce: %s, signature: %s", xTimestamp, xNonce, xSignature)
 	}
 
 	return true, nil
