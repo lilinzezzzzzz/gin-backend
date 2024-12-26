@@ -12,14 +12,12 @@ import (
 )
 
 // 不需要认证的路径列表
-var notSessionAuthPaths = []string{
-	"/auth/login",
-	"/auth/register",
-	"/docs",
-	"/openapi.json",
-	"/v1/auth/login_by_account",
-	"/v1/auth/login_by_phone",
-	"/v1/auth/verify_session",
+var notSessionAuthPaths = map[string]struct{}{
+	"/auth/login":               {},
+	"/auth/register":            {},
+	"/v1/auth/login_by_account": {},
+	"/v1/auth/login_by_phone":   {},
+	"/v1/auth/verify_session":   {},
 }
 
 // AuthMiddleware 鉴权中间件
@@ -28,11 +26,10 @@ func AuthMiddleware() gin.HandlerFunc {
 		urlPath := ctx.Request.URL.Path
 
 		// 1. 跳过无需认证的路径
-		for _, path := range notSessionAuthPaths {
-			if urlPath == path || strings.HasPrefix(urlPath, "/docs") {
-				ctx.Next()
-				return
-			}
+		if _, exist := notSessionAuthPaths[urlPath]; exist {
+			ctx.Next()
+			return
+
 		}
 
 		// 2. 验签逻辑
