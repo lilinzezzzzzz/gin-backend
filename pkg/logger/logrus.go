@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/natefinch/lumberjack"
 	"github.com/sirupsen/logrus"
-	"innoversepm-backend/pkg/constants"
+	"golang-backend/pkg/constants"
 	"io"
 	"log"
 	"os"

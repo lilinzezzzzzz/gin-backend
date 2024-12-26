@@ -4,7 +4,7 @@ package xjwt
 import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
-	"innoversepm-backend/internal/setting"
+	"golang-backend/internal/setting"
 	"strings"
 	"time"
 )

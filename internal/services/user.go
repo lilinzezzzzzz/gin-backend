@@ -2,7 +2,7 @@ package services
 
 import (
 	"github.com/gin-gonic/gin"
-	"innoversepm-backend/internal/entity"
+	"golang-backend/internal/entity"
 )
 
 type UserService struct {

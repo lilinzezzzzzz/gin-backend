@@ -3,12 +3,12 @@ package infra
 import (
 	"context"
 	"fmt"
-	"innoversepm-backend/pkg/logger"
+	"golang-backend/pkg/logger"
 	"log"
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"innoversepm-backend/internal/setting"
+	"golang-backend/internal/setting"
 )
 
 var (

@@ -2,8 +2,8 @@ package converter
 
 import (
 	"github.com/jinzhu/copier"
-	"innoversepm-backend/internal/entity"
-	"innoversepm-backend/internal/models"
+	"golang-backend/internal/entity"
+	"golang-backend/internal/models"
 	"time"
 )
 

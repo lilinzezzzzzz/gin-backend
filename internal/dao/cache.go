@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"innoversepm-backend/internal/entity"
-	"innoversepm-backend/internal/infra"
-	"innoversepm-backend/pkg/logger"
+	"golang-backend/internal/entity"
+	"golang-backend/internal/infra"
+	"golang-backend/pkg/logger"
 	"time"
 
 	"github.com/go-redis/redis/v8"

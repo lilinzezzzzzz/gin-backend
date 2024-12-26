@@ -2,9 +2,9 @@ package core
 
 import (
 	"github.com/gin-gonic/gin"
-	"innoversepm-backend/internal/dao"
-	"innoversepm-backend/internal/entity"
-	"innoversepm-backend/pkg/logger"
+	"golang-backend/internal/dao"
+	"golang-backend/internal/entity"
+	"golang-backend/pkg/logger"
 )
 
 // VerifySession checks if the given session is valid and returns the user data associated with it.

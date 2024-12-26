@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"innoversepm-backend/internal/services"
-	"innoversepm-backend/pkg/resp"
+	"golang-backend/internal/services"
+	"golang-backend/pkg/resp"
 )
 
 type UserController struct {

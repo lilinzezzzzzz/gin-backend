@@ -1,11 +1,12 @@
 package middleware
 
 import (
-	"innoversepm-backend/internal/core"
-	"innoversepm-backend/internal/setting"
-	"innoversepm-backend/pkg/constants"
-	"innoversepm-backend/pkg/resp"
-	"innoversepm-backend/pkg/xsignature"
+	"fmt"
+	"golang-backend/internal/core"
+	"golang-backend/internal/setting"
+	"golang-backend/pkg/constants"
+	"golang-backend/pkg/resp"
+	"golang-backend/pkg/xsignature"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -42,7 +43,11 @@ func AuthMiddleware() gin.HandlerFunc {
 			xNonce := ctx.GetHeader("X-Nonce")
 
 			signature := xsignature.NewSignatureSrv(setting.Config)
-			if !signature.VerifySignature(ctx, xSignature, xTimestamp, xNonce) {
+			ok, err := signature.VerifySignature(xSignature, xTimestamp, xNonce)
+			if err != nil {
+				resp.InternalServerError(ctx, fmt.Sprintf("signature VerifySignature err: %v", err))
+			}
+			if !ok {
 				resp.UNAUTHORIZED(ctx, "invalid xsignature or timestamp")
 				return
 			}

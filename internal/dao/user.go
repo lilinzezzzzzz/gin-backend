@@ -3,10 +3,10 @@ package dao
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"golang-backend/internal/infra"
+	"golang-backend/internal/models"
+	"golang-backend/pkg/logger"
 	"gorm.io/gorm"
-	"innoversepm-backend/internal/infra"
-	"innoversepm-backend/internal/models"
-	"innoversepm-backend/pkg/logger"
 )
 
 type User interface {

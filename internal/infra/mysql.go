@@ -2,7 +2,7 @@ package infra
 
 import (
 	"fmt"
-	"innoversepm-backend/internal/setting"
+	"golang-backend/internal/setting"
 	"log"
 	"time"
 

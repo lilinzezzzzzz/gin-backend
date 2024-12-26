@@ -6,7 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"innoversepm-backend/internal/setting"
+	"golang-backend/internal/setting"
 	"sort"
 	"strconv"
 	"strings"

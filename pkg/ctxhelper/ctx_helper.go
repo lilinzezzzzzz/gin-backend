@@ -3,8 +3,8 @@ package ctxhelper
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"innoversepm-backend/internal/entity"
-	"innoversepm-backend/pkg/logger"
+	"golang-backend/internal/entity"
+	"golang-backend/pkg/logger"
 )
 
 // GetUserData 从 gin.Context 中获取用户数据

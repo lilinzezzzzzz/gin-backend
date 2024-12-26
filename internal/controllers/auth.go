@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"innoversepm-backend/internal/entity"
-	"innoversepm-backend/internal/services"
-	"innoversepm-backend/pkg/logger"
-	"innoversepm-backend/pkg/resp"
+	"golang-backend/internal/entity"
+	"golang-backend/internal/services"
+	"golang-backend/pkg/logger"
+	"golang-backend/pkg/resp"
 )
 
 type AuthController struct {

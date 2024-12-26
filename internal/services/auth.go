@@ -3,11 +3,11 @@ package services
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"innoversepm-backend/internal/dao"
-	"innoversepm-backend/internal/entity"
-	"innoversepm-backend/pkg/bcrypt"
-	"innoversepm-backend/pkg/ctxHelper"
-	"innoversepm-backend/pkg/resp"
+	"golang-backend/internal/dao"
+	"golang-backend/internal/entity"
+	"golang-backend/pkg/bcrypt"
+	"golang-backend/pkg/ctxHelper"
+	"golang-backend/pkg/resp"
 )
 
 type AuthService struct {

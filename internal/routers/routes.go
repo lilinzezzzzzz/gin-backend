@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"innoversepm-backend/internal/controllers"
+	"golang-backend/internal/controllers"
 )
 
 func RegisterRoutes(r *gin.Engine) {

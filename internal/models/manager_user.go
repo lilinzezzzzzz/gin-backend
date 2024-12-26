@@ -1,8 +1,8 @@
 package models
 
 import (
+	"golang-backend/pkg/snowflake"
 	"gorm.io/gorm"
-	"innoversepm-backend/pkg/snowflake"
 	"time"
 )
 
