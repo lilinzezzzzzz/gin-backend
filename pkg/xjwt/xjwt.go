@@ -4,7 +4,6 @@ package xjwt
 import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
-	"golang-backend/internal/setting"
 	"strings"
 	"time"
 )
@@ -19,15 +18,15 @@ type Claims struct {
 // JwtService 提供JWT相关的功能
 type JwtService struct {
 	secretKey     string
-	jwtAlgorithm  string
+	algorithm     string
 	expireMinutes int
 }
 
 // NewJWTService 创建一个新的JWTService实例
-func NewJWTService(cfg *setting.AppConfig) *JwtService {
+func NewJWTService(secretKey string, algorithm string, ex int) *JwtService {
 	return &JwtService{
-		secretKey:     cfg.App.SecretKey,
-		jwtAlgorithm:  "HS256",
+		secretKey:     secretKey,
+		algorithm:     algorithm,
 		expireMinutes: 180,
 	}
 }
@@ -46,7 +45,7 @@ func (j *JwtService) CreateToken(userID int, userName string) (string, error) {
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.GetSigningMethod(j.jwtAlgorithm), claims)
+	token := jwt.NewWithClaims(jwt.GetSigningMethod(j.algorithm), claims)
 	tokenString, err := token.SignedString([]byte(j.secretKey))
 	if err != nil {
 		return "", err
