@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"golang-backend/internal/core"
 	"golang-backend/internal/setting"
+	"golang-backend/internal/utils/resp"
 	"golang-backend/pkg/constants"
-	"golang-backend/pkg/resp"
 	"golang-backend/pkg/xsignature"
 	"strings"
 
@@ -42,7 +42,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			xTimestamp := ctx.GetHeader("X-Timestamp")
 			xNonce := ctx.GetHeader("X-Nonce")
 
-			signature := xsignature.NewSignatureSrv(setting.Config)
+			signature := xsignature.NewSignatureSrv(setting.Config.App.SecretKey, "h256", 18000)
 			ok, err := signature.VerifySignature(xSignature, xTimestamp, xNonce)
 			if err != nil {
 				resp.InternalServerError(ctx, fmt.Sprintf("signature VerifySignature err: %v", err))

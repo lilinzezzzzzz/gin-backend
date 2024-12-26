@@ -5,9 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang-backend/internal/dao"
 	"golang-backend/internal/entity"
+	"golang-backend/internal/utils/ctxhelper"
+	"golang-backend/internal/utils/resp"
 	"golang-backend/pkg/bcrypt"
-	"golang-backend/pkg/ctxHelper"
-	"golang-backend/pkg/resp"
 )
 
 type AuthService struct {

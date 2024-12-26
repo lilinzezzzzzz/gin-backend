@@ -6,7 +6,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"golang-backend/internal/setting"
 	"sort"
 	"strconv"
 	"strings"
@@ -21,11 +20,11 @@ type SignatureSrv struct {
 }
 
 // NewSignatureSrv 创建一个HMACSigner实例
-func NewSignatureSrv(cfg *setting.AppConfig) *SignatureSrv {
+func NewSignatureSrv(secretKey string, algorithm string, ex int64) *SignatureSrv {
 	return &SignatureSrv{
-		secretKey:          []byte(cfg.App.SecretKey),
-		hashAlgorithm:      "sha256",
-		timestampTolerance: 18000,
+		secretKey:          []byte(secretKey),
+		hashAlgorithm:      algorithm,
+		timestampTolerance: ex,
 	}
 }
 

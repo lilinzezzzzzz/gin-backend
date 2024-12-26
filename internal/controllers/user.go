@@ -3,7 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"golang-backend/internal/services"
-	"golang-backend/pkg/resp"
+	"golang-backend/internal/utils/resp"
 )
 
 type UserController struct {
