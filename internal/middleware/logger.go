@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"golang-backend/pkg/logger"
+	"golang-backend/internal/utils/logger"
 	"strings"
 	"time"
 )

@@ -5,7 +5,6 @@ import (
 	"golang-backend/internal/core"
 	"golang-backend/internal/setting"
 	"golang-backend/internal/utils/resp"
-	"golang-backend/pkg/constants"
 	"golang-backend/pkg/xsignature"
 	"strings"
 
@@ -46,6 +45,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			ok, err := signature.VerifySignature(xSignature, xTimestamp, xNonce)
 			if err != nil {
 				resp.InternalServerError(ctx, fmt.Sprintf("signature VerifySignature err: %v", err))
+				return
 			}
 			if !ok {
 				resp.UNAUTHORIZED(ctx, "invalid xsignature or timestamp")
@@ -60,16 +60,6 @@ func AuthMiddleware() gin.HandlerFunc {
 		userData, ok := core.VerifySession(ctx, session)
 		if !ok {
 			resp.UNAUTHORIZED(ctx, "invalid or missing session")
-			return
-		}
-
-		if strings.HasPrefix(urlPath, "/v1") {
-			ctx.Next()
-			return
-		}
-
-		if userData.Category != constants.UserManager {
-			resp.UNAUTHORIZED(ctx, "invalid user category")
 			return
 		}
 

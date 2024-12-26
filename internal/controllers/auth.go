@@ -6,8 +6,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang-backend/internal/entity"
 	"golang-backend/internal/services"
+	"golang-backend/internal/utils/logger"
 	"golang-backend/internal/utils/resp"
-	"golang-backend/pkg/logger"
 )
 
 type AuthController struct {

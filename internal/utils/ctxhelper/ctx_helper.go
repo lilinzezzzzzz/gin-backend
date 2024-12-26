@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"golang-backend/internal/entity"
-	"golang-backend/pkg/logger"
+	"golang-backend/internal/utils/logger"
 )
 
 // GetUserData 从 gin.Context 中获取用户数据

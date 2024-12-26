@@ -33,7 +33,7 @@ type CustomFormatter struct {
 	EnableColor bool // 是否启用颜色
 }
 
-// Format 实现 logrus.Formatter 接口
+// Format 实现 logger.Formatter 接口
 func (f *CustomFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	// 获取时间戳并格式化
 	timestamp := entry.Time.Format(time.RFC3339)
@@ -127,4 +127,5 @@ func InitLogrus(env string) {
 	BaseLogger.SetReportCaller(true)
 	BaseLogger.SetFormatter(formatter)
 	BaseLogger.SetLevel(logrus.InfoLevel)
+	log.Println("Logrus logger initialized")
 }

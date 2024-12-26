@@ -5,7 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang-backend/internal/infra"
 	"golang-backend/internal/models"
-	"golang-backend/pkg/logger"
+	"golang-backend/internal/utils/logger"
 	"gorm.io/gorm"
 )
 

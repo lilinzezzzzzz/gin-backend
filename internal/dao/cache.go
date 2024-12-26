@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang-backend/internal/entity"
 	"golang-backend/internal/infra"
-	"golang-backend/pkg/logger"
+	"golang-backend/internal/utils/logger"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -82,13 +82,6 @@ func SetSessionList(ctx *gin.Context, userID int64, session string) error {
 			logger.Logger(ctx).Error(fmt.Sprintf("Failed to lpop from %s", cacheKey), err)
 			return err
 		} else {
-			// 这里可根据需求删除旧的session键值，如果需要的话
-			// err := Client.Del(ctx, SessionCacheKey(oldSession)).Err()
-			// if err != nil {
-			//     loggerError(fmt.Sprintf("Failed to delete old session %s", oldSession), err)
-			//     return err
-			// }
-
 			// 插入新的session
 			if err := infra.Client.RPush(ctx, cacheKey, session).Err(); err != nil {
 				logger.Logger(ctx).Error(fmt.Sprintf("Failed to rpush new session into %s", cacheKey), err)

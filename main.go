@@ -9,6 +9,7 @@ import (
 	"golang-backend/internal/setting"
 	"golang-backend/pkg/constants"
 	"golang-backend/pkg/logger"
+	"golang-backend/pkg/snowflake"
 	"log"
 	"os"
 	"strings"
@@ -39,6 +40,9 @@ func main() {
 	// 初始化 Redis
 	infra.InitRedis(setting.Config)
 	defer infra.CloseRedis()
+
+	// 初始化 雪花算法
+	snowflake.InitSnowflake()
 
 	// 初始化 Gin 引擎
 	r := gin.New()

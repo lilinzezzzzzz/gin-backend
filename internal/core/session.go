@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang-backend/internal/dao"
 	"golang-backend/internal/entity"
-	"golang-backend/pkg/logger"
+	"golang-backend/internal/utils/logger"
 )
 
 // VerifySession checks if the given session is valid and returns the user data associated with it.
