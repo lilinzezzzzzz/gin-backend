@@ -8,7 +8,6 @@ import (
 )
 
 // UserToEntity 将 models.User 转换为 entity.UserEntity，所有时间字段转换为 ISO 8601 格式
-// UserToEntity 将 models.User 转换为 entity.UserEntity
 func UserToEntity(m *models.User) *entity.UserEntity {
 	userEntity := &entity.UserEntity{}
 
