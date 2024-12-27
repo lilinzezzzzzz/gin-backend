@@ -6,7 +6,6 @@ import (
 	"golang-backend/internal/dao"
 	"golang-backend/internal/entity"
 	"golang-backend/internal/utils/ctxhelper"
-	"golang-backend/internal/utils/resp"
 	"golang-backend/pkg/bcrypt"
 )
 
@@ -42,10 +41,9 @@ func (a *AuthService) LoginByAccount(ctx *gin.Context, account string, password 
 }
 
 func (a *AuthService) LoginByPhone(ctx *gin.Context, phone string) (*entity.UserSessionData, error) {
-	return nil, nil
+	return nil, errors.New("not implement")
 }
 
-func (a *AuthService) LoginOut(ctx *gin.Context) error {
-	resp.BadRequest(ctx, "not implement")
+func (a *AuthService) LogOut(ctx *gin.Context) error {
 	return errors.New("not implement")
 }

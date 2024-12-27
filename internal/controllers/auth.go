@@ -11,18 +11,19 @@ import (
 )
 
 type AuthController struct {
-	logger *logrus.Logger
-	serv   *services.AuthService
+	logger func(ctx *gin.Context) *logrus.Entry
+	srv    *services.AuthService
 }
 
 func NewAuthController() *AuthController {
 	return &AuthController{
-		serv: services.NewAuthService(),
+		srv:    services.NewAuthService(),
+		logger: logger.Logger,
 	}
 }
 
 func (a *AuthController) UserSessionData(ctx *gin.Context) {
-	userData, err := a.serv.UserSessionData(ctx)
+	userData, err := a.srv.UserSessionData(ctx)
 	if err != nil {
 		resp.UNAUTHORIZED(ctx, err.Error())
 		return
@@ -39,7 +40,7 @@ func (a *AuthController) ManagerLogin(ctx *gin.Context) {
 		return
 	}
 
-	session, err := a.serv.LoginByAccount(ctx, loginReq.Account, loginReq.Password)
+	session, err := a.srv.LoginByAccount(ctx, loginReq.Account, loginReq.Password)
 	if err != nil {
 		resp.UNAUTHORIZED(ctx, err.Error())
 		return
@@ -49,9 +50,9 @@ func (a *AuthController) ManagerLogin(ctx *gin.Context) {
 
 // LoginOut 登出
 func (a *AuthController) LoginOut(ctx *gin.Context) {
-	err := a.serv.LoginOut(ctx)
+	err := a.srv.LogOut(ctx)
 	if err != nil {
-		logger.Logger(ctx).Infof(fmt.Sprintf("LoginOut error: %v", err))
+		a.logger(ctx).Infof(fmt.Sprintf("LogOut error: %v", err))
 		return
 	}
 
