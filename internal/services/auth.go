@@ -1,8 +1,8 @@
 package services
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"golang-backend/internal/dao"
 	"golang-backend/internal/entity"
 	"golang-backend/internal/utils/ctxhelper"

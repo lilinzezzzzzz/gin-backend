@@ -2,9 +2,9 @@ package dao
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"golang-backend/internal/entity"
 	"golang-backend/internal/infra"
 	"golang-backend/internal/utils/logger"

@@ -1,8 +1,8 @@
 package ctxhelper
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"golang-backend/internal/entity"
 	"golang-backend/internal/utils/logger"
 )

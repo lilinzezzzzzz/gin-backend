@@ -2,8 +2,8 @@
 package xjwt
 
 import (
-	"errors"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/pkg/errors"
 	"strings"
 	"time"
 )

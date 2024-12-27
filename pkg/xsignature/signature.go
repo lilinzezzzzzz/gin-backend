@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"github.com/pkg/errors"
 	"sort"
 	"strconv"
 	"strings"
@@ -81,7 +82,7 @@ func (s *SignatureSrv) IsTimestampValid(requestTimeStr string) (bool, error) {
 
 	currentTime := time.Now().Unix()
 	if (currentTime - requestTime) > s.timestampTolerance {
-		return false, fmt.Errorf("invalid timestamp, request_time: %d, current_time: %d", requestTime, currentTime)
+		return false, errors.Errorf("invalid timestamp, request_time: %d, current_time: %d", requestTime, currentTime)
 	}
 
 	return true, nil
