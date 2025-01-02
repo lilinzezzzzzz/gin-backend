@@ -20,11 +20,12 @@ func InitMySQL(cfg *setting.AppConfig) {
 	// 构建 DSN (Data Source DBName)
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		cfg.Database.MySQL.Username,
-		cfg.Database.MySQL.Password,
-		cfg.Database.MySQL.Host,
-		cfg.Database.MySQL.Port,
-		cfg.Database.MySQL.DBName)
+		cfg.MySQL.Username,
+		cfg.MySQL.Password,
+		cfg.MySQL.Host,
+		cfg.MySQL.Port,
+		cfg.MySQL.DBName,
+	)
 
 	// 配置 GORM 日志级别
 	newLogger := logger.New(
@@ -56,9 +57,9 @@ func InitMySQL(cfg *setting.AppConfig) {
 	}
 
 	// 设置连接池参数
-	sqlDB.SetMaxOpenConns(cfg.Database.MySQL.MaxOpenConns)       // 最大打开的连接数
-	sqlDB.SetMaxIdleConns(cfg.Database.MySQL.MaxIdleConns)       // 最大空闲连接数
-	sqlDB.SetConnMaxLifetime(cfg.Database.MySQL.ConnMaxLifetime) // 连接最大生命周期
+	sqlDB.SetMaxOpenConns(cfg.MySQL.MaxOpenConns)       // 最大打开的连接数
+	sqlDB.SetMaxIdleConns(cfg.MySQL.MaxIdleConns)       // 最大空闲连接数
+	sqlDB.SetConnMaxLifetime(cfg.MySQL.ConnMaxLifetime) // 连接最大生命周期
 
 	log.Println("MySQL database connected successfully")
 }

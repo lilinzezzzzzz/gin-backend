@@ -4,32 +4,18 @@ app:
   cors_origins:
     - "*"
 
-database:
-  mysql:
-    username: "root"
-    password: "F4ASxTobZXY4"
-    host: "47.106.139.247"
-    port: 23306
-    dbname: "innoversepm"
-    max_open_conns: 50
-    max_idle_conns: 10
-    conn_max_lifetime: "60s"
-
-  design_gpt_mysql:
-    username: "innoverse"
-    password: "Innoverse012"
-    host: "47.106.139.247"
-    port: 13306
-    dbname: "innoverse_v3_backend"
-    max_open_conns: 50
-    max_idle_conns: 10
-    conn_max_lifetime: "60s"
+mysql:
+  username: "root"
+  password: "F4ASxTobZXY4"
+  host: "47.106.139.247"
+  port: 23306
+  dbname: "golang_backend"
+  max_open_conns: 50
+  max_idle_conns: 10
+  conn_max_lifetime: "60s"
 
 redis:
   host: "47.106.139.247"
   port: 26379
   password: ""
   db: 0
-
-design_gpt_api:
-  base_url: "http://47.106.139.247:8008/api/v1"

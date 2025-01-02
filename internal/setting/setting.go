@@ -11,10 +11,9 @@ var Config *AppConfig
 
 // AppConfig 包含整个配置文件的结构
 type AppConfig struct {
-	App          App          `mapstructure:"app"`
-	Database     Database     `mapstructure:"database"`
-	Redis        Redis        `mapstructure:"redis"`
-	DesignGPTAPI DesignGPTAPI `mapstructure:"design_gpt_api"`
+	App   App   `mapstructure:"app"`
+	MySQL MySQL `mapstructure:"mysql"`
+	Redis Redis `mapstructure:"redis"`
 }
 
 // App 配置
@@ -30,16 +29,10 @@ type MySQL struct {
 	Password        string `mapstructure:"password"`
 	Host            string `mapstructure:"host"`
 	Port            int    `mapstructure:"port"`
-	DBName          string `mapstructure:"name"`
+	DBName          string `mapstructure:"dbname"`
 	MaxOpenConns    int
 	MaxIdleConns    int
 	ConnMaxLifetime time.Duration
-}
-
-// Database 配置，包含多个数据库配置
-type Database struct {
-	MySQL          MySQL `mapstructure:"mysql"`
-	DesignGPTMySQL MySQL `mapstructure:"design_gpt_mysql"`
 }
 
 // Redis 配置
@@ -48,11 +41,6 @@ type Redis struct {
 	Port     int    `mapstructure:"port"`
 	Password string `mapstructure:"password"`
 	DB       int    `mapstructure:"db"`
-}
-
-// DesignGPTAPI 配置
-type DesignGPTAPI struct {
-	BaseURL string `mapstructure:"base_url"`
 }
 
 // LoadConfig 从 viper 加载配置到 Config 结构体
