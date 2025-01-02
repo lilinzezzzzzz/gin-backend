@@ -42,7 +42,7 @@ func (a *AuthServer) ManagerLogin(ctx *gin.Context) {
 
 	session, err := a.srv.LoginByAccount(ctx, loginReq.Account, loginReq.Password)
 	if err != nil {
-		resp.Failed(ctx, "", err.Error())
+		resp.InternalServerError(ctx, err.Error())
 		return
 	}
 	resp.Success(ctx, session)
