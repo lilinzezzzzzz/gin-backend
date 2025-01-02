@@ -28,6 +28,16 @@ func Success(ctx *gin.Context, data any) {
 	return
 }
 
+// Failed 返回失败响应
+func Failed(ctx *gin.Context, code string, message string) {
+	ctx.JSON(http.StatusOK, Response{
+		Code:    code,
+		Data:    nil,
+		Message: message,
+	})
+	return
+}
+
 // Error 返回错误响应
 func Error(ctx *gin.Context, httpStatus int, code string, message string) {
 	ctx.JSON(httpStatus, Response{

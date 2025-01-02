@@ -52,7 +52,7 @@ func (dao *UserDao) GetUserByID(ctx *gin.Context, id uint) (*models.User, error)
 func (dao *UserDao) GetUserByAccount(ctx *gin.Context, account string) (*models.User, error) {
 	var user models.User
 	if err := dao.db.Where("account = ?", account).First(&user).Error; err != nil {
-		dao.logger(ctx).Errorf("Error fetching user by account: %+v", err)
+		dao.logger(ctx).Errorf("fetching user by account: %+v", err)
 		return nil, err
 	}
 	return &user, nil

@@ -42,7 +42,7 @@ func (a *AuthServer) ManagerLogin(ctx *gin.Context) {
 
 	session, err := a.srv.LoginByAccount(ctx, loginReq.Account, loginReq.Password)
 	if err != nil {
-		resp.UNAUTHORIZED(ctx, err.Error())
+		resp.Failed(ctx, "", err.Error())
 		return
 	}
 	resp.Success(ctx, session)
@@ -52,7 +52,7 @@ func (a *AuthServer) ManagerLogin(ctx *gin.Context) {
 func (a *AuthServer) LoginOut(ctx *gin.Context) {
 	err := a.srv.LogOut(ctx)
 	if err != nil {
-		a.logger(ctx).Infof(fmt.Sprintf("LogOut error: %v", err))
+		resp.Failed(ctx, "", err.Error())
 		return
 	}
 
