@@ -9,7 +9,11 @@ var sf *sonyflake.Sonyflake
 
 // InitSnowflake 初始化雪花算法生成器
 func InitSnowflake() {
-	stSettings := sonyflake.Settings{}
+	stSettings := sonyflake.Settings{
+		MachineID: func() (uint16, error) {
+			return 1, nil
+		},
+	}
 
 	var err error
 	sf, err = sonyflake.New(stSettings)
