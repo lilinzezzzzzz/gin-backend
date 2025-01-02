@@ -11,6 +11,7 @@ import (
 	"golang-backend/pkg/logger"
 	"golang-backend/pkg/snowflake"
 	"log"
+
 	"os"
 	"strings"
 )
@@ -25,7 +26,7 @@ func main() {
 	case constants.ProdEnvVal:
 		gin.SetMode(gin.ReleaseMode)
 	default:
-		log.Fatal("Invalid environment specified")
+		log.Fatalf("Invalid environment specified: %s", env)
 	}
 	// 加载配置
 	setting.LoadConfig(env)

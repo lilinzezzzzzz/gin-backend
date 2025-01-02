@@ -2,21 +2,26 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"golang-backend/internal/controllers"
+	"golang-backend/internal/servers"
 )
 
 func RegisterRoutes(r *gin.Engine) {
-	// 用户路由示例
+	helloGroup := r.Group("/hello")
+	helloServer := servers.NewHelloServer()
+	helloGroup.GET("", helloServer.Hello)
+
+	// 鉴权
 	authGroup := r.Group("/auth")
-	authController := controllers.NewAuthController()
+	authServer := servers.NewAuthServer()
 	{
-		authGroup.GET("/user", authController.UserSessionData)
-		authGroup.POST("/login", authController.ManagerLogin)
-		authGroup.PUT("/logout", authController.LoginOut)
+		authGroup.GET("/me", authServer.UserSessionData)
+		authGroup.POST("/login", authServer.ManagerLogin)
+		authGroup.PUT("/logout", authServer.LoginOut)
 	}
-	userGroup := r.Group("/user_manager")
-	userController := controllers.NewUserController()
+	// 用户
+	userGroup := r.Group("")
+	userServer := servers.NewUserServer()
 	{
-		userGroup.GET("/user/:user_id", userController.UserDetail)
+		userGroup.GET("/user/:user_id", userServer.UserDetail)
 	}
 }

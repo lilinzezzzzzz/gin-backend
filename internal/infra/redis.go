@@ -3,12 +3,13 @@ package infra
 import (
 	"context"
 	"fmt"
+	"golang-backend/internal/setting"
 	"golang-backend/pkg/logger"
+
 	"log"
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"golang-backend/internal/setting"
 )
 
 var (
