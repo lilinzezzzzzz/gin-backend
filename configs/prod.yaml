@@ -8,7 +8,7 @@ mysql:
   username: "root"
   password: "F4ASxTobZXY4"
   host: "47.106.139.247"
-  port: 23306
+  port: "23306"
   dbname: "golang_backend"
   max_open_conns: 50
   max_idle_conns: 10
@@ -16,6 +16,6 @@ mysql:
 
 redis:
   host: "47.106.139.247"
-  port: 26379
+  port: "26379"
   password: ""
   db: 0

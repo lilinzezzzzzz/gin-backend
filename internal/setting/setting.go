@@ -18,7 +18,7 @@ type AppConfig struct {
 
 // App 配置
 type App struct {
-	Port        int      `mapstructure:"port"`
+	Port        string   `mapstructure:"port"`
 	SecretKey   string   `mapstructure:"secret_key"`
 	CORSOrigins []string `mapstructure:"cors_origins"`
 }
@@ -28,7 +28,7 @@ type MySQL struct {
 	Username        string `mapstructure:"username"`
 	Password        string `mapstructure:"password"`
 	Host            string `mapstructure:"host"`
-	Port            int    `mapstructure:"port"`
+	Port            string `mapstructure:"port"`
 	DBName          string `mapstructure:"dbname"`
 	MaxOpenConns    int
 	MaxIdleConns    int
@@ -38,7 +38,7 @@ type MySQL struct {
 // Redis 配置
 type Redis struct {
 	Host     string `mapstructure:"host"`
-	Port     int    `mapstructure:"port"`
+	Port     string `mapstructure:"port"`
 	Password string `mapstructure:"password"`
 	DB       int    `mapstructure:"db"`
 }

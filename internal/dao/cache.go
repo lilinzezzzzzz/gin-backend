@@ -19,7 +19,7 @@ type Cache struct {
 
 func NewCache() *Cache {
 	return &Cache{
-		cli: infra.Client,
+		cli: infra.NewRedisClient(),
 	}
 }
 

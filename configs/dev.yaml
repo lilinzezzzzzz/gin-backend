@@ -1,5 +1,5 @@
 app:
-  port: 28091
+  port: "28091"
   secret_key: "oWjbDf6vDOwJQEoAxDXoDulPLdaFKPpdVKu2psBaaT9yugovFN6bSL"
   cors_origins:
     - "*"
@@ -8,7 +8,7 @@ mysql:
   username: "root"
   password: "F4ASxTobZXY4"
   host: "62.234.73.208"
-  port: 23306
+  port: "23306"
   dbname: "golang_backend"
   max_open_conns: 50
   max_idle_conns: 10
@@ -16,6 +16,6 @@ mysql:
 
 redis:
   host: "62.234.73.208"
-  port: 26379
+  port: "26379"
   password: ""
   db: 0

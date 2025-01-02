@@ -3,12 +3,13 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"golang-backend/internal/infra"
 	"golang-backend/internal/middleware"
 	"golang-backend/internal/routers"
 	"golang-backend/internal/setting"
 	"golang-backend/pkg/constants"
+	"golang-backend/pkg/db"
 	"golang-backend/pkg/logger"
+	"golang-backend/pkg/redis"
 	"golang-backend/pkg/snowflake"
 	"log"
 
@@ -35,12 +36,22 @@ func main() {
 	logger.InitLogrus(env)
 
 	// 初始化 MySQL
-	infra.InitMySQL(setting.Config)
-	defer infra.CloseMySQL()
+	dbCfg := setting.Config.MySQL
+	db.InitMySQL(
+		dbCfg.Username,
+		dbCfg.Password,
+		dbCfg.Host,
+		dbCfg.Port,
+		dbCfg.DBName,
+		dbCfg.MaxOpenConns,
+		dbCfg.MaxIdleConns,
+		dbCfg.ConnMaxLifetime)
+	defer db.CloseMySQL()
 
 	// 初始化 Redis
-	infra.InitRedis(setting.Config)
-	defer infra.CloseRedis()
+	redisCfg := setting.Config.Redis
+	redis.InitRedis(redisCfg.Host, redisCfg.Port, redisCfg.Password, redisCfg.DB)
+	defer redis.CloseRedis()
 
 	// 初始化 雪花算法
 	snowflake.InitSnowflake()
@@ -56,7 +67,7 @@ func main() {
 
 	// 从配置中读取端口号
 	port := setting.Config.App.Port
-	if err := r.Run(fmt.Sprintf(":%d", port)); err != nil {
+	if err := r.Run(fmt.Sprintf(":%s", port)); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }
