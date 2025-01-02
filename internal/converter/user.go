@@ -1,9 +1,10 @@
 package converter
 
 import (
+	"encoding/json"
 	"github.com/jinzhu/copier"
-	"golang-backendinternal/entity"
-	"golang-backendinternal/models"
+	"golang-backend/internal/entity"
+	"golang-backend/internal/models"
 	"time"
 )
 
@@ -53,4 +54,18 @@ func UserToModel(e *entity.UserEntity) *models.User {
 	}
 
 	return userModel
+}
+
+func UserToJSON(m *models.User) ([]byte, error) {
+	e := UserToEntity(m)
+	return json.Marshal(e)
+}
+
+// UserToJSONString 如果需要返回字符串形式
+func UserToJSONString(m *models.User) (string, error) {
+	jsonData, err := UserToJSON(m)
+	if err != nil {
+		return "", err
+	}
+	return string(jsonData), nil
 }

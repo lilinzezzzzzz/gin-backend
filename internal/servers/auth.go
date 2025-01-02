@@ -22,7 +22,7 @@ func NewAuthServer() *AuthServer {
 	}
 }
 
-func (a *AuthServer) UserSessionData(ctx *gin.Context) {
+func (a *AuthServer) AuthMe(ctx *gin.Context) {
 	userData, err := a.srv.UserSessionData(ctx)
 	if err != nil {
 		resp.UNAUTHORIZED(ctx, err.Error())
@@ -32,7 +32,7 @@ func (a *AuthServer) UserSessionData(ctx *gin.Context) {
 	resp.Success(ctx, userData)
 }
 
-func (a *AuthServer) ManagerLogin(ctx *gin.Context) {
+func (a *AuthServer) UserLogin(ctx *gin.Context) {
 	// 绑定请求体到 LoginRequest 结构体
 	var loginReq entity.LoginRequest
 	if err := ctx.ShouldBindJSON(&loginReq); err != nil {
@@ -48,8 +48,8 @@ func (a *AuthServer) ManagerLogin(ctx *gin.Context) {
 	resp.Success(ctx, session)
 }
 
-// LoginOut 登出
-func (a *AuthServer) LoginOut(ctx *gin.Context) {
+// UserLoginOut 登出
+func (a *AuthServer) UserLoginOut(ctx *gin.Context) {
 	err := a.srv.LogOut(ctx)
 	if err != nil {
 		resp.Failed(ctx, "", err.Error())

@@ -14,9 +14,9 @@ func RegisterRoutes(r *gin.Engine) {
 	authGroup := r.Group("/auth")
 	authServer := servers.NewAuthServer()
 	{
-		authGroup.GET("/me", authServer.UserSessionData)
-		authGroup.POST("/login", authServer.ManagerLogin)
-		authGroup.PUT("/logout", authServer.LoginOut)
+		authGroup.GET("/me", authServer.AuthMe)
+		authGroup.POST("/login", authServer.UserLogin)
+		authGroup.PUT("/logout", authServer.UserLoginOut)
 	}
 	// 用户
 	userGroup := r.Group("")

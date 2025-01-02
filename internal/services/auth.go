@@ -3,41 +3,62 @@ package services
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"golang-backend/internal/converter"
+	"golang-backend/internal/core"
 	"golang-backend/internal/dao"
 	"golang-backend/internal/entity"
 	"golang-backend/internal/utils/ctxhelper"
+	"golang-backend/internal/utils/logger"
 	"golang-backend/pkg/bcrypt"
 )
 
 type AuthService struct {
 	userDao *dao.UserDao
+	cache   *dao.Cache
 }
 
 func NewAuthService() *AuthService {
 	return &AuthService{
 		userDao: dao.NewUserDao(),
+		cache:   dao.NewCache(),
 	}
 }
 
 func (a *AuthService) UserSessionData(ctx *gin.Context) (*entity.UserSessionData, error) {
 	userData, err := ctxhelper.GetUserData(ctx)
 	if err != nil {
+		logger.Logger(ctx).Warnf("UserSessionData.GetUserData err: %v", err)
 		return nil, err
 	}
 	return userData, nil
 }
 
-func (a *AuthService) LoginByAccount(ctx *gin.Context, account string, password string) (*entity.UserSessionData, error) {
+func (a *AuthService) LoginByAccount(ctx *gin.Context, account string, password string) (string, error) {
 	user, err := a.userDao.GetUserByAccount(ctx, account)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	if err := bcrypt.VerifyPassword(password, user.Password); err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return &entity.UserSessionData{}, nil
+	session := core.GenerateSession()
+	userJson, err := converter.UserToJSONString(user)
+	if err != nil {
+		return "", err
+	}
+
+	// 设置session
+	if err := a.cache.SetSession(ctx, session, userJson); err != nil {
+		return "", err
+	}
+
+	if err := a.cache.SetSessionList(ctx, user.ID, session); err != nil {
+		return "", err
+	}
+
+	return session, nil
 }
 
 func (a *AuthService) LoginByPhone(ctx *gin.Context, phone string) (*entity.UserSessionData, error) {

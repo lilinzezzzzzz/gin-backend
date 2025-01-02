@@ -1,11 +1,19 @@
 package core
 
 import (
+	"encoding/hex"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"golang-backend/internal/dao"
 	"golang-backend/internal/entity"
 	"golang-backend/internal/utils/logger"
 )
+
+// GenerateSession 生成一个 uuid 字符串
+func GenerateSession() string {
+	u := uuid.New()                 // 返回一个 [16]byte 的 UUID
+	return hex.EncodeToString(u[:]) // 直接对 16 字节进行 Hex 编码
+}
 
 // VerifySession checks if the given session is valid and returns the user data associated with it.
 func VerifySession(ctx *gin.Context, session string) (*entity.UserSessionData, bool) {

@@ -8,7 +8,7 @@ type UserSessionData struct {
 	Account   string     `json:"account"`
 	Username  string     `json:"username"`
 	Password  string     `json:"password"`
-	ID        int64      `json:"id"`
+	ID        uint       `json:"id"`
 	DeletedAt *time.Time `json:"deleted_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 	CreatedAt time.Time  `json:"created_at"`
