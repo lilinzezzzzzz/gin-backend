@@ -17,50 +17,50 @@ type User interface {
 
 // UserDao 结构体
 type UserDao struct {
-	db     *gorm.DB
+	db     func(ctx *gin.Context) *gorm.DB
 	logger func(ctx *gin.Context) *logrus.Entry
 }
 
 // NewUserDao 创建 UserDao 实例
 func NewUserDao() *UserDao {
 	return &UserDao{
-		db:     infra.DB,
+		db:     infra.NewDB,
 		logger: logger.Logger,
 	}
 }
 
 // CreateUser 创建用户
-func (dao *UserDao) CreateUser(ctx *gin.Context, user *models.User) error {
-	if err := dao.db.Create(user).Error; err != nil {
-		dao.logger(ctx).Errorf("Error creating user: %v", err)
+func (u *UserDao) CreateUser(ctx *gin.Context, user *models.User) error {
+	if err := u.db(ctx).Create(user).Error; err != nil {
+		u.logger(ctx).Errorf("Error creating user: %v", err)
 		return err
 	}
 	return nil
 }
 
 // GetUserByID 根据 ID 查询用户
-func (dao *UserDao) GetUserByID(ctx *gin.Context, id uint) (*models.User, error) {
+func (u *UserDao) GetUserByID(ctx *gin.Context, id uint) (*models.User, error) {
 	var user models.User
-	if err := dao.db.First(&user, id).Error; err != nil {
-		dao.logger(ctx).Errorf("Error fetching user by ID: %v", err)
+	if err := u.db(ctx).First(&user, id).Error; err != nil {
+		u.logger(ctx).Errorf("Error fetching user by ID: %v", err)
 		return nil, err
 	}
 	return &user, nil
 }
 
 // GetUserByAccount 根据账号查询用户
-func (dao *UserDao) GetUserByAccount(ctx *gin.Context, account string) (*models.User, error) {
+func (u *UserDao) GetUserByAccount(ctx *gin.Context, account string) (*models.User, error) {
 	var user models.User
-	if err := dao.db.Where("account = ?", account).First(&user).Error; err != nil {
-		dao.logger(ctx).Errorf("fetching user by account: %+v", err)
+	if err := u.db(ctx).Where("account = ?", account).First(&user).Error; err != nil {
+		u.logger(ctx).Errorf("fetching user by account: %+v", err)
 		return nil, err
 	}
 	return &user, nil
 }
 
 // UpdateUser 更新用户信息
-func (dao *UserDao) UpdateUser(ctx *gin.Context, user *models.User) error {
-	if err := dao.db.Save(user).Error; err != nil {
+func (u *UserDao) UpdateUser(ctx *gin.Context, user *models.User) error {
+	if err := u.db(ctx).Save(user).Error; err != nil {
 		logger.Logger(ctx).Errorf("Error updating user: %+v", err)
 		return err
 	}
@@ -68,23 +68,10 @@ func (dao *UserDao) UpdateUser(ctx *gin.Context, user *models.User) error {
 }
 
 // DeleteUserByID 软删除用户
-func (dao *UserDao) DeleteUserByID(ctx *gin.Context, id uint) error {
-	if err := dao.db.Delete(&models.User{}, id).Error; err != nil {
-		dao.logger(ctx).Errorf("Error deleting user: %+v", err)
+func (u *UserDao) DeleteUserByID(ctx *gin.Context, id uint) error {
+	if err := u.db(ctx).Delete(&models.User{}, id).Error; err != nil {
+		u.logger(ctx).Errorf("Error deleting user: %+v", err)
 		return err
 	}
 	return nil
-}
-
-type ManagerUserDao struct {
-	db     *gorm.DB
-	logger func(ctx *gin.Context) *logrus.Entry
-}
-
-// NewManagerUserDao 创建 UserDao 实例
-func NewManagerUserDao() *UserDao {
-	return &UserDao{
-		db:     infra.DB,
-		logger: logger.Logger,
-	}
 }
