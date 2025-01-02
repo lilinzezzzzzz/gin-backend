@@ -2,6 +2,7 @@ package dao
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"golang-backend/internal/infra"
 	"golang-backend/internal/models"
@@ -52,8 +53,7 @@ func (u *UserDao) GetUserByID(ctx *gin.Context, id uint) (*models.User, error) {
 func (u *UserDao) GetUserByAccount(ctx *gin.Context, account string) (*models.User, error) {
 	var user models.User
 	if err := u.db(ctx).Where("account = ?", account).First(&user).Error; err != nil {
-		u.logger(ctx).Errorf("fetching user by account: %+v", err)
-		return nil, err
+		return nil, errors.Wrap(err, "UserDao.GetUserByAccount")
 	}
 	return &user, nil
 }

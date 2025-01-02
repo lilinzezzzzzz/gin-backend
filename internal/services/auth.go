@@ -8,7 +8,6 @@ import (
 	"golang-backend/internal/dao"
 	"golang-backend/internal/entity"
 	"golang-backend/internal/utils/ctxhelper"
-	"golang-backend/internal/utils/logger"
 	"golang-backend/pkg/bcrypt"
 )
 
@@ -27,8 +26,7 @@ func NewAuthService() *AuthService {
 func (a *AuthService) UserSessionData(ctx *gin.Context) (*entity.UserSessionData, error) {
 	userData, err := ctxhelper.GetUserData(ctx)
 	if err != nil {
-		logger.Logger(ctx).Warnf("UserSessionData.GetUserData err: %v", err)
-		return nil, err
+		return nil, errors.Wrap(err, "UserSessionData.GetUserData")
 	}
 	return userData, nil
 }
@@ -36,7 +34,7 @@ func (a *AuthService) UserSessionData(ctx *gin.Context) (*entity.UserSessionData
 func (a *AuthService) LoginByAccount(ctx *gin.Context, account string, password string) (string, error) {
 	user, err := a.userDao.GetUserByAccount(ctx, account)
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "AuthService.LoginByAccount")
 	}
 
 	if err := bcrypt.VerifyPassword(password, user.Password); err != nil {

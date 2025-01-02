@@ -25,6 +25,7 @@ func NewAuthServer() *AuthServer {
 func (a *AuthServer) AuthMe(ctx *gin.Context) {
 	userData, err := a.srv.UserSessionData(ctx)
 	if err != nil {
+		logger.Logger(ctx).Errorf("AuthMe.UserSessionData err: %v", err)
 		resp.UNAUTHORIZED(ctx, err.Error())
 		return
 	}
@@ -34,14 +35,15 @@ func (a *AuthServer) AuthMe(ctx *gin.Context) {
 
 func (a *AuthServer) UserLogin(ctx *gin.Context) {
 	// 绑定请求体到 LoginRequest 结构体
-	var loginReq entity.LoginRequest
-	if err := ctx.ShouldBindJSON(&loginReq); err != nil {
+	var req entity.LoginRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		resp.BadRequest(ctx, fmt.Sprintf("Invalid request parameters: %v", err))
 		return
 	}
 
-	session, err := a.srv.LoginByAccount(ctx, loginReq.Account, loginReq.Password)
+	session, err := a.srv.LoginByAccount(ctx, req.Account, req.Password)
 	if err != nil {
+		logger.Logger(ctx).Errorf("UserLogin.LoginByAccount err: %v", err)
 		resp.InternalServerError(ctx, err.Error())
 		return
 	}
@@ -52,7 +54,8 @@ func (a *AuthServer) UserLogin(ctx *gin.Context) {
 func (a *AuthServer) UserLoginOut(ctx *gin.Context) {
 	err := a.srv.LogOut(ctx)
 	if err != nil {
-		resp.Failed(ctx, "", err.Error())
+		logger.Logger(ctx).Errorf("AuthServer.UserLoginOut err: %v", err)
+		resp.InternalServerError(ctx, err.Error())
 		return
 	}
 
