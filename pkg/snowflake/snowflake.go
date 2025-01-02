@@ -20,10 +20,10 @@ func InitSnowflake() {
 }
 
 // GenerateSnowflakeID 生成雪花 ID
-func GenerateSnowflakeID() uint {
+func GenerateSnowflakeID() (uint, error) {
 	id, err := sf.NextID()
 	if err != nil {
-		log.Fatalf("Failed to generate snowflake ID: %v", err)
+		return 0, err
 	}
-	return uint(id)
+	return uint(id), nil
 }
