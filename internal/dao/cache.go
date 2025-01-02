@@ -23,17 +23,17 @@ func NewCache() *Cache {
 	}
 }
 
-func SessionCacheKey(session string) string {
+func (c *Cache) SessionCacheKey(session string) string {
 	return "session:" + session
 }
 
-func SessionLstCacheKey(userID int64) string {
+func (c *Cache) SessionLstCacheKey(userID int64) string {
 	return fmt.Sprintf("session_list:%d", userID)
 }
 
 // SetSession 设置会话键值，并设置过期时间（默认10800秒=3小时）
 func (c *Cache) SetSession(ctx *gin.Context, session string, userID int, category string, ex time.Duration) error {
-	key := SessionCacheKey(session)
+	key := c.SessionCacheKey(session)
 	value := map[string]interface{}{
 		"user_id":  userID,
 		"category": category,
@@ -43,7 +43,7 @@ func (c *Cache) SetSession(ctx *gin.Context, session string, userID int, categor
 
 // GetSessionValue  获取会话中的用户ID和用户类型。
 func (c *Cache) GetSessionValue(ctx *gin.Context, session string) (*entity.UserSessionData, error) {
-	sessCacheKey := SessionCacheKey(session)
+	sessCacheKey := c.SessionCacheKey(session)
 	value, err := c.GetValue(ctx, sessCacheKey)
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func (c *Cache) GetSessionValue(ctx *gin.Context, session string) (*entity.UserS
 // 如果列表长度<3，直接rpush
 // 如果列表>=3，lpop最旧session再rpush新session
 func (c *Cache) SetSessionList(ctx *gin.Context, userID int64, session string) error {
-	cacheKey := SessionLstCacheKey(userID)
+	cacheKey := c.SessionLstCacheKey(userID)
 
 	sessionList, err := c.GetListAll(ctx, cacheKey)
 	if err != nil {

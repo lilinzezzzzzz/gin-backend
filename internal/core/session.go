@@ -14,7 +14,8 @@ func VerifySession(ctx *gin.Context, session string) (*entity.UserSessionData, b
 		return nil, false
 	}
 
-	userData, err := dao.GetSessionValue(ctx, session)
+	cache := dao.NewCache()
+	userData, err := cache.GetSessionValue(ctx, session)
 	if err != nil {
 		logger.Logger(ctx).Warnf("Token verification failed: error getting session userData: %v\n", err)
 		return nil, false
@@ -25,8 +26,8 @@ func VerifySession(ctx *gin.Context, session string) (*entity.UserSessionData, b
 		return nil, false
 	}
 
-	sessionLstKey := dao.SessionLstCacheKey(userData.ID)
-	sessionLst, err := dao.GetListAll(ctx, sessionLstKey)
+	sessionLstKey := cache.SessionLstCacheKey(userData.ID)
+	sessionLst, err := cache.GetListAll(ctx, sessionLstKey)
 	if err != nil {
 		logger.Logger(ctx).Warnf("Token verification failed: error getting session list: %v\n", err)
 		return nil, false
