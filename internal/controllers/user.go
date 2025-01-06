@@ -1,4 +1,4 @@
-package servers
+package controllers
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,18 +6,18 @@ import (
 	"golang-backend/internal/utils/resp"
 )
 
-type UserServer struct {
+type UserController struct {
 	srv *services.UserService
 }
 
-func NewUserServer() *UserServer {
-	return &UserServer{
+func NewUserController() *UserController {
+	return &UserController{
 		srv: services.NewUserService(),
 	}
 }
 
 // AddUser 增加用户
-func (u *UserServer) AddUser(ctx *gin.Context) {
+func (u *UserController) AddUser(ctx *gin.Context) {
 	err := u.srv.AddUser(ctx)
 	if err != nil {
 		return
@@ -25,7 +25,7 @@ func (u *UserServer) AddUser(ctx *gin.Context) {
 	resp.Success(ctx, nil)
 }
 
-func (u *UserServer) UserList(ctx *gin.Context) {
+func (u *UserController) UserList(ctx *gin.Context) {
 	users, err := u.srv.UserList(ctx)
 	if err != nil {
 		return
@@ -33,7 +33,7 @@ func (u *UserServer) UserList(ctx *gin.Context) {
 	resp.Success(ctx, users)
 }
 
-func (u *UserServer) UserDetail(ctx *gin.Context) {
+func (u *UserController) UserDetail(ctx *gin.Context) {
 	user, err := u.srv.UserDetail(ctx, 0)
 	if err != nil {
 		return

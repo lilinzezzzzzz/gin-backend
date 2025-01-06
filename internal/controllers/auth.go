@@ -1,4 +1,4 @@
-package servers
+package controllers
 
 import (
 	"fmt"
@@ -10,19 +10,19 @@ import (
 	"golang-backend/internal/utils/resp"
 )
 
-type AuthServer struct {
+type AuthController struct {
 	logger func(ctx *gin.Context) *logrus.Entry
 	srv    *services.AuthService
 }
 
-func NewAuthServer() *AuthServer {
-	return &AuthServer{
+func NewAuthController() *AuthController {
+	return &AuthController{
 		srv:    services.NewAuthService(),
 		logger: logger.Logger,
 	}
 }
 
-func (a *AuthServer) AuthMe(ctx *gin.Context) {
+func (a *AuthController) AuthMe(ctx *gin.Context) {
 	userData, err := a.srv.UserSessionData(ctx)
 	if err != nil {
 		logger.Logger(ctx).Errorf("AuthMe.UserSessionData err: %v", err)
@@ -33,7 +33,7 @@ func (a *AuthServer) AuthMe(ctx *gin.Context) {
 	resp.Success(ctx, userData)
 }
 
-func (a *AuthServer) UserLogin(ctx *gin.Context) {
+func (a *AuthController) UserLogin(ctx *gin.Context) {
 	// 绑定请求体到 LoginRequest 结构体
 	var req entity.LoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -51,10 +51,10 @@ func (a *AuthServer) UserLogin(ctx *gin.Context) {
 }
 
 // UserLoginOut 登出
-func (a *AuthServer) UserLoginOut(ctx *gin.Context) {
+func (a *AuthController) UserLoginOut(ctx *gin.Context) {
 	err := a.srv.LogOut(ctx)
 	if err != nil {
-		logger.Logger(ctx).Errorf("AuthServer.UserLoginOut err: %v", err)
+		logger.Logger(ctx).Errorf("AuthController.UserLoginOut err: %v", err)
 		resp.InternalServerError(ctx, err.Error())
 		return
 	}
