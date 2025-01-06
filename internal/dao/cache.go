@@ -58,6 +58,10 @@ func (c *Cache) GetSessionValue(ctx *gin.Context, session string) (*entity.UserS
 	return &intermediate, nil
 }
 
+func (c *Cache) DeleteSessionLst(ctx *gin.Context, userID uint) error {
+	return c.DeleteKey(ctx, c.SessionLstCacheKey(userID))
+}
+
 // SetSessionList 更新用户的session列表：
 // 如果列表长度<3，直接rpush
 // 如果列表>=3，lpop最旧session再rpush新session
@@ -100,7 +104,10 @@ func (c *Cache) SetSessionList(ctx *gin.Context, userID uint, session string) er
 			)
 		}
 	}
-
+	_, err = c.ExpireKey(ctx, cacheKey, time.Second*3600)
+	if err != nil {
+		logger.Logger(ctx).Warnf("set %s expire faile, err: %v", cacheKey, err)
+	}
 	return nil
 }
 

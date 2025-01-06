@@ -25,7 +25,7 @@ func GetUserData(ctx *gin.Context) (*entity.UserSessionData, error) {
 func GetUserID(ctx *gin.Context) (uint, error) {
 	userData, err := GetUserData(ctx)
 	if err != nil {
-		return 0, err
+		return 0, errors.Wrap(err, "GetUserData")
 	}
 
 	return userData.ID, nil

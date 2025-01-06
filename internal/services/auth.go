@@ -64,5 +64,11 @@ func (a *AuthService) LoginByPhone(ctx *gin.Context, phone string) (*entity.User
 }
 
 func (a *AuthService) LogOut(ctx *gin.Context) error {
-	return errors.New("not implement")
+	// 获取userID
+	userID, err := ctxhelper.GetUserID(ctx)
+	if err != nil {
+		return errors.Wrap(err, "LogOut.GetUserID")
+	}
+	// 删除session列表
+	return a.cache.DeleteSessionLst(ctx, userID)
 }
