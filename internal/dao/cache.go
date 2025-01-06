@@ -89,19 +89,16 @@ func (c *Cache) SetSessionList(ctx *gin.Context, userID uint, session string) er
 		if errors.Is(err, redis.Nil) {
 			// 如果为空，不用特别处理，但逻辑上来说已经判断length>=3，不会出现nil
 		} else if err != nil {
-			logger.Logger(ctx).Error(fmt.Sprintf("Failed to lpop from %s", cacheKey), err)
+			logger.Logger(ctx).Errorf("Failed to lpop from, err: %s", err)
 			return err
 		} else {
 			// 插入新的session
 			if err := c.cli.RPush(ctx, cacheKey, session).Err(); err != nil {
-				logger.Logger(ctx).Error(fmt.Sprintf("Failed to rpush new session into %s", cacheKey), err)
+				logger.Logger(ctx).Errorf("Failed to rpush new session into, err: %s", err)
 				return err
 			}
 
-			logger.Logger(ctx).Warning(
-				fmt.Sprintf("Session list for user %d is full, popping and deleting oldest session: %s",
-					userID, oldSession),
-			)
+			logger.Logger(ctx).Warnf("Session list for user %d is full, popping and deleting oldest session: %s", userID, oldSession)
 		}
 	}
 	_, err = c.ExpireKey(ctx, cacheKey, time.Second*3600)
