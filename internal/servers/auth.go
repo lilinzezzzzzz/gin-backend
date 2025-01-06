@@ -59,5 +59,5 @@ func (a *AuthServer) UserLoginOut(ctx *gin.Context) {
 		return
 	}
 
-	resp.Success(ctx, 0)
+	resp.Success(ctx, nil)
 }
