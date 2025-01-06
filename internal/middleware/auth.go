@@ -3,6 +3,7 @@ package middleware
 import (
 	"fmt"
 	"golang-backend/internal/core"
+	"golang-backend/internal/entity"
 	"golang-backend/internal/setting"
 	"golang-backend/internal/utils/resp"
 	"golang-backend/pkg/xsignature"
@@ -62,7 +63,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// 将用户信息存储到上下文中
-		ctx.Set("user_data", userData)
+		ctx.Set(entity.UserDataKey, userData)
 		ctx.Next()
 		return
 	}
