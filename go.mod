@@ -1,6 +1,6 @@
 module golang-backend
 
-go 1.23.1
+go 1.25.6
 
 require (
 	github.com/gin-gonic/gin v1.10.0

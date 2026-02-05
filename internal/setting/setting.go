@@ -1,10 +1,12 @@
+// Package setting handles application configuration loading and management.
 package setting
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 	"log"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 var Config *AppConfig
