@@ -3,12 +3,13 @@ package dao
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 	"golang-backend/internal/entity"
 	"golang-backend/internal/infra"
 	"golang-backend/internal/utils/logger"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -32,9 +33,9 @@ func (c *Cache) SessionLstCacheKey(userID uint) string {
 }
 
 // SetSession 设置会话键值，并设置过期时间（默认10800秒=3小时）
-func (c *Cache) SetSession(ctx *gin.Context, session string, userJson string) error {
+func (c *Cache) SetSession(ctx *gin.Context, session string, userJSON string) error {
 	key := c.SessionCacheKey(session)
-	return c.SetValue(ctx, key, userJson, time.Second*3600)
+	return c.SetValue(ctx, key, userJSON, time.Second*3600)
 }
 
 // GetSessionValue  获取会话中的用户ID和用户类型。
